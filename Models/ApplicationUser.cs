@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ClashArt.Models
 {
@@ -21,6 +22,11 @@ namespace ClashArt.Models
         public int Victories { get; set; } = 0;
         public int ExperiencePoints { get; set; } = 0;
         public virtual ICollection<Post> Posts { get; set; }
+        [InverseProperty("Follower")]
+        public virtual ICollection<Follow> Following { get; set; }
+
+        [InverseProperty("Followed")]
+        public virtual ICollection<Follow> Followers { get; set; }
 
     }
 }
