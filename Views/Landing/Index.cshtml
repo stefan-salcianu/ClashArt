@@ -1,0 +1,373 @@
+﻿@{
+    ViewData["Title"] = "Digital Art Arena";
+}
+
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+    <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[120px] mix-blend-screen animate-pulse"></div>
+    <div class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[150px] mix-blend-screen"></div>
+</div>
+
+<section class="relative z-10 flex flex-col items-center justify-center min-h-[90vh] px-4 py-20 text-center font-display">
+    <div class="hidden lg:block absolute top-1/4 left-10 w-48 h-64 rounded-xl overflow-hidden opacity-40 rotate-[-12deg] border border-white/10 shadow-2xl transition-transform duration-700 hover:rotate-0 hover:opacity-100 hover:scale-105">
+        <img alt="Digital art sample" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoxg1mu6ECEQ5T_MaUdRIsQdYxmnLi4l2gGF47kVoRdlggp_TKimFmY8pPtqtXW3cscHZkqJ_ZYzVBbJtKNO7CDFZB_QIC_XD8JNiUA6Z5jJPX0rCD0uCVwzlnVqxlAC-dMEi--o6baNf87IQToIgfF4IK_KC41iPya2oP4paK6s0qmed0zy6axaqj04BvRvcw-28jKxi7JmNZdUNtAkN0PorBc40BdM_RGgtEw8kdGs9eO9PyxebJHrWA2XYjFUDxjbuqlDc0xCE" />
+    </div>
+    <div class="hidden lg:block absolute bottom-1/4 right-10 w-56 h-40 rounded-xl overflow-hidden opacity-40 rotate-[6deg] border border-white/10 shadow-2xl transition-transform duration-700 hover:rotate-0 hover:opacity-100 hover:scale-105">
+        <img alt="Digital landscape sample" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnHH_5RarYnDh7_pTM7h5toEuNIBbbi2DRXMwBkMdJ_cH8bth5ihwUpxcQZqQNvpr0d7BZB4qcaJk-e2I5SAuRg9yREdSTTQYGvwES_ykeD9g_9SGRTS7qiJejCKoj4s7hgxb_N27lzmBF8LcwOZ1Ps4OSHo9hU1c2cHOesg9PC0X-tjZft98DPTSm-AfQGe_nkJ5r1_igLHTRlF9c9hK4cuElP_ayUTWoCPHO89opZJrNQtz_fAEVGB1-Hw9AEKW67Ebn7R0UMgQ" />
+    </div>
+
+    <div class="max-w-4xl mx-auto flex flex-col items-center gap-8">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 backdrop-blur-sm animate-bounce duration-[3000ms]">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+            </span>
+            <span class="text-xs font-medium text-secondary uppercase tracking-widest">Season 4 Live Now</span>
+        </div>
+
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-gray-500 drop-shadow-2xl">
+            YOUR ART IS <br />
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-fuchsia-400 to-secondary text-glow">YOUR WEAPON</span>
+        </h1>
+
+        <p class="text-lg md:text-xl text-gray-400 max-w-2xl leading-relaxed font-body">
+            Join the world's first high-stakes digital arena where skill is verified and legends are born. Prove your worth in the ultimate creative battleground.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center gap-4 mt-4">
+            <button class="group relative px-8 py-4 bg-primary rounded-lg text-white font-bold text-lg tracking-wide overflow-hidden shadow-neon transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(229,6,214,0.6)]">
+                <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:animate-[shimmer_1s_infinite]"></div>
+                <span class="relative flex items-center gap-2">
+                    JOIN THE ARENA
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </span>
+            </button>
+            <button class="px-8 py-4 rounded-lg border border-white/20 hover:border-white/50 bg-white/5 hover:bg-white/10 text-white font-medium transition-all">
+                Watch Trailer
+            </button>
+        </div>
+
+        <div class="mt-8 flex items-center gap-3 px-6 py-3 rounded-full glass-card">
+            <div class="flex -space-x-3">
+                <div class="w-8 h-8 rounded-full border-2 border-background-dark bg-gray-700 overflow-hidden"><img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9XDBIDH5IuWEqdSNbu_19hFLzpqKedUZr06DYCXh9uPjUqFVH7CbNlkOtzpZMH2JS9LY0CjhMCR05E088w1xy8h6mvlJvtgTEIJf4VZcHSTYBBRpOB6aXWIV-b3NVhW4kzIAi0Ix2XQ0ZcoJZ9chNg_Kx3KAaAkGqkGKa9tLt5pOgJS8tC-ADmFdS3EWnauslcoT_QVCl2k6hQFFkp5BMoNWApIkbvJCwxNmH2OAJ--k1Pj9mqC2tMf1Syj2tau4bNg5LDm49SOg" /></div>
+                <div class="w-8 h-8 rounded-full border-2 border-background-dark bg-gray-700 overflow-hidden"><img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQYC5XWC1lTtJnURma-X-c96UPAZgAEf1hmLD-SSBrUeZBoIxU7VkXOyktZEyQXEl031m1mWPcbJ65c33-Ammea5kWqwdUasPgZwySWIwDmaJFMOIIFoA-ZGYJtVHYYk6JrKGBjt7dz845OYfrQxNwxXSTbPp8piHpgTaSicqOzeKeti--jR3sGcMUa4kq4kgAHSOgxgHzmNq7rEYDuucuCfamzHRq5KKpNOfWS-Odwqwt7P3OHa70ZhYB2NGD1l-nf2ylXeAk0ZY" /></div>
+                <div class="w-8 h-8 rounded-full border-2 border-background-dark bg-gray-800 flex items-center justify-center text-[10px] font-bold text-white">+5k</div>
+            </div>
+            <p class="text-sm text-gray-300 font-body">Join <span class="text-white font-bold">50,000+ Duelists</span> active now</p>
+        </div>
+    </div>
+</section>
+
+
+
+<section class="relative z-10 py-24 px-4 bg-background-dark border-t border-white/5 font-body">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+            <div>
+                <h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-4 font-display">How It Works</h2>
+                <p class="text-gray-400 max-w-md">Enter a verified ecosystem built for human creativity. No AI. No cheats. Just pure skill.</p>
+            </div>
+            <a class="text-primary hover:text-white transition-colors flex items-center gap-2 font-bold group" href="#">
+                Read the full rulebook
+                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass-card p-8 rounded-xl relative overflow-hidden group hover:border-primary/50 transition-colors duration-300">
+                <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="relative z-10 flex flex-col h-full">
+                    <div class="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform duration-300">
+                        <span class="material-symbols-outlined text-3xl">trophy</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3 font-display group-hover:text-primary transition-colors">The Challenge</h3>
+                    <p class="text-gray-400 leading-relaxed mb-6 flex-grow">Engage in high-octane weekly themes designed to test your adaptability. From "Cyber Noir" to "Organic Chaos", prove your range.</p>
+                </div>
+            </div>
+            <div class="glass-card p-8 rounded-xl relative overflow-hidden group hover:border-secondary/50 transition-colors duration-300">
+                <div class="absolute inset-0 bg-gradient-to-br from-secondary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="relative z-10 flex flex-col h-full">
+                    <div class="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center mb-6 text-secondary group-hover:scale-110 transition-transform duration-300">
+                        <span class="material-symbols-outlined text-3xl">verified_user</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3 font-display group-hover:text-secondary transition-colors">The Proof</h3>
+                    <p class="text-gray-400 leading-relaxed mb-6 flex-grow">Our proprietary <span class="text-white font-medium">Timelapse Verification™</span> ensures every stroke is authentically yours. AI generation is strictly detected and banned.</p>
+                </div>
+            </div>
+            <div class="glass-card p-8 rounded-xl relative overflow-hidden group hover:border-purple-500/50 transition-colors duration-300">
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="relative z-10 flex flex-col h-full">
+                    <div class="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center mb-6 text-purple-400 group-hover:scale-110 transition-transform duration-300">
+                        <span class="material-symbols-outlined text-3xl">crown</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3 font-display group-hover:text-purple-400 transition-colors">The Glory</h3>
+                    <p class="text-gray-400 leading-relaxed mb-6 flex-grow">Climb the global ELO ranks, earn exclusive profile badges, and solidify your legacy in the permanent digital Hall of Fame.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trending Battles Section -->
+<section class="py-20 bg-[#121212]">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mb-10 flex items-end justify-between">
+            <div>
+                <h2 class="text-3xl font-bold tracking-tight text-white">Trending Battles</h2>
+                <p class="mt-2 text-gray-400">High-stakes duels happening right now.</p>
+            </div>
+            <a class="hidden items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 sm:flex" href="#">
+                View all battles <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </a>
+        </div>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <!-- Battle Card 1 -->
+            <div class="group relative overflow-hidden rounded-xl border border-white/10 bg-[#1e1e1e]/60 backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg">
+                <div class="relative h-64 w-full">
+                    <!-- Split Images -->
+                    <div class="absolute inset-0 flex">
+                        <div class="relative h-full w-1/2 overflow-hidden border-r border-black/50">
+                            <div class="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="Cyberpunk samurai character art in red tones" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCy25wdc2l3re5weHRfz-CxyiXgwP7TCvSOeyLDkXrJqacHb84ryfyNjKHsDU02E2yyFRlhsneJxsScrPLk0_3OJeUB3Lv-_WS4IT8v62bnQG7dtbyVHB5Y7XVKKymRZ3-agxlGBkCoAXECi-d6Xdfu51Jb9iHKtr0zVHuuw0gzImfPNYH2I118iWt09-uKEPS1yBO4SQuUILETKPVdJXqb9n5VPR130bfm7dxJU-OZGNdUZq5droIGFHSP0ivvS99zKfeJmYELvYQ');">
+                            </div>
+                            <div class="absolute bottom-2 left-2 flex items-center gap-2">
+                                <div class="h-8 w-8 rounded-full border-2 border-primary bg-gray-800 bg-cover bg-center" data-alt="Avatar of user NeonSamurai" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBId7NsWrLuORSOOmwJba1VsBcsVW5nQ1fMJMm-ve_wg4Ul-YzLM3Ngq-hR-GBKqK3VkHx6W3NdCTfUprWCB7_S79V7EvDQZHBYfX4jXFK6ejA50vUjzcpzZga9umpAu816IeM4jNGT2jtNojuCthh8owyhQ_vblkge9CFhJ2wy03JkMdHxUQaP5y7_uU1tesp6yMy-dOaW1pHWgZluX9-9l-BfMJpYuQuZzPWXAMl5s5I7coTP_O1_9A-sUvzqevcI3axO6LgMhg8');"></div>
+                                <span class="text-xs font-bold text-white shadow-black drop-shadow-md">NeonSamurai</span>
+                            </div>
+                        </div>
+                        <div class="relative h-full w-1/2 overflow-hidden">
+                            <div class="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="Abstract futuristic cityscape in blue tones" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDaH6K0StfSQQ8Dsd4mXa56_8YG6dcaGv4I-0LHXrTU9eVcxxJa8OOvV2dpEPz5kTj4HHFsgasai1fUhszT6BhZa0pYk5EGBWOhepWlNkb43mURKqgevMfNNvuihevoCyh4W-NNXG298ThlVrBGXQPzemD38nbFCJbD4iFC2VE5JqFeaSZN5lZSEkvCVzKTqAPqKuQqizKzCXLYB6peBY8325UYr77_8UFpDAmjwqvUZKxfpp092hw6gelf6T34sP0geYfBylVW4Hk');">
+                            </div>
+                            <div class="absolute bottom-2 right-2 flex flex-row-reverse items-center gap-2">
+                                <div class="h-8 w-8 rounded-full border-2 border-secondary bg-gray-800 bg-cover bg-center" data-alt="Avatar of user CyberQueen" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAtsrqYTRwiRXowdV62ImYU5EZs-08a7qpL39p7YlWUUeXcw3hujVn6bQjD5WOqE4pPfJTAkbMEAOwKknArOmMHWLkUIibPOzcfct1fbT_3i0AtSrh6tRdZPcOLu_7nuLDJLSBss5vAdTb0QBPyHFkawIFbZT47EYp5CNSaSmCJ4yMpKO6OBs25z_6YJuT7qXl6MkG_FXA7A80LbpXTpz_suvwiXUjHRQxsoCIR3Q80rz2teIIxLKwJX__TGvYh_9oXdk1_yel76Wk');"></div>
+                                <span class="text-xs font-bold text-white shadow-black drop-shadow-md">CyberQueen</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- VS Badge -->
+                    <div class="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#121212] border border-white/20 font-black italic text-white shadow-xl z-10">
+                        VS
+                    </div>
+                    <!-- Live Tag -->
+                    <div class="absolute top-3 left-3 flex items-center gap-1 rounded bg-red-500/90 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+                        <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-white"></span> Live
+                    </div>
+                </div>
+                <!-- Card Body -->
+                <div class="p-4">
+                    <div class="mb-4 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-white">Cyberpunk Visions</h3>
+                            <p class="text-xs text-gray-400">Concept Art • 3D Render</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="flex items-center gap-1 text-primary">
+                                <span class="material-symbols-outlined text-sm">timer</span>
+                                <span class="font-mono text-sm font-bold">04:20:15</span>
+                            </div>
+                            <p class="text-xs text-gray-400">Remaining</p>
+                        </div>
+                    </div>
+                    <!-- Voting Bar -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-xs font-medium">
+                            <span class="text-primary">1.2k Votes</span>
+                            <span class="text-secondary">950 Votes</span>
+                        </div>
+                        <div class="h-2 w-full overflow-hidden rounded-full bg-[#121212]">
+                            <div class="flex h-full w-full">
+                                <div class="h-full bg-primary shadow-[0_0_10px_rgba(229,6,214,0.5)]" style="width: 56%"></div>
+                                <div class="h-full bg-secondary shadow-[0_0_10px_rgba(6,229,214,0.5)]" style="width: 44%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex gap-2">
+                        <button class="flex-1 rounded bg-white/5 py-2 text-xs font-bold text-white transition-colors hover:bg-primary hover:text-white">Vote Left</button>
+                        <button class="flex-1 rounded bg-white/5 py-2 text-xs font-bold text-white transition-colors hover:bg-secondary hover:text-[#121212]">Vote Right</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Battle Card 2 -->
+            <div class="group relative overflow-hidden rounded-xl border border-white/10 bg-[#1e1e1e]/60 backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg">
+                <div class="relative h-64 w-full">
+                    <div class="absolute inset-0 flex">
+                        <div class="relative h-full w-1/2 overflow-hidden border-r border-black/50">
+                            <div class="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="Dark fantasy character portrait with glowing eyes" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAxXYMtn4IMSJSraAQsgUI3QpAodeXsxoDD6_hXR2_Ow7ibI2wtb5wG_t-ZoVRfymeAAl62oFxzxQaRlSAPENzf0bm6IvMXHjZU7YNiwPWWU7RwgDMwLyqrVUxQzqXLRWp8rxTH5iDuxTjQM-UUkhveLmu84W2vosZqfhEWkMk8e2aZiyqdg9Ov89zYSIsjq1oJNaTaojdmAl-jPZh8UfFI7KnyWT_SXdD1vZ3Z9gPF6awsudzkkEGkld5ChJyHfc_HQ5h_DU7Fl88');">
+                            </div>
+                            <div class="absolute bottom-2 left-2 flex items-center gap-2">
+                                <div class="h-8 w-8 rounded-full border-2 border-primary bg-gray-800 bg-cover bg-center" data-alt="Avatar of user DarkArts" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD9RZTaRxFGoL_13aSFPyXC16ne27vNaCPOFsTQ-qhTRN1zEMgkJ4iHbejOdLhZguPF1Np7wDxFaZj28fmq94kBXfoxC_JxM9D8B_ICJ494TttLkAvMRnQvhqoXKb_xJf4vZTYZFw98W01Dx7eZ1kCwxBCFPHClWQgt-SpwgVYiGN7vrsJESd7fmueyPnrrGRPfW8z6u4iuttqHM9MvlxJZktb_YNIun4vLclXirGI25YWhDRFj38qzh_5tAaWodFF2C8iC3oqjjAc');"></div>
+                                <span class="text-xs font-bold text-white shadow-black drop-shadow-md">DarkArts</span>
+                            </div>
+                        </div>
+                        <div class="relative h-full w-1/2 overflow-hidden">
+                            <div class="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="Ethereal fantasy landscape with floating islands" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBq05YtFRztC7BxBPiF89NdLhzJ6weCD9ALxKujagfjcMWc5IJeb7JK6oymuc1gskFcUOg_xc-RGmtgj_QXX8sf1MBBZU64k2Zaq-KUrMEIEwqbQkB56slASnsuohhzVP6GDm0tiTPW1aAFqZ1zV1un3nU3q3UaxoJiegUorCtvPIKgyvlMFuszBXCstz1o1PDN1zNB8RxiYbNRM875OxaFNGCln7gye9inVidBKJ3qPwBc-PgFtNAU61ekIlFhVRf_01Kodw2Wdr0');">
+                            </div>
+                            <div class="absolute bottom-2 right-2 flex flex-row-reverse items-center gap-2">
+                                <div class="h-8 w-8 rounded-full border-2 border-secondary bg-gray-800 bg-cover bg-center" data-alt="Avatar of user LightWeaver" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA_9_mdsohFozpfO1c_eF_ZVQs1X1D8HTFIWMXIDCES7ARZrUtezQLDjxiU96aWPnLFqbcL50fDXsFPRsP3oc1ohciAOxddQUPsVsgyiHw7jNACh4-89b0LKV6k52nfkmSEYMMu4af6r-7nvMizguflY95etlYsqKvWLC5XeDgeVS8-v6jhVROBiQ6MwiGyXAB0VuFn-6k0uC-Lomj_1kOCd_8JidtEssCYs2GNiH-K9Ia4EJrPX7zXv-GXAT7M7PuZDbQLgrrzASA');"></div>
+                                <span class="text-xs font-bold text-white shadow-black drop-shadow-md">LightWeaver</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#121212] border border-white/20 font-black italic text-white shadow-xl z-10">VS</div>
+                    <div class="absolute top-3 left-3 flex items-center gap-1 rounded bg-red-500/90 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+                        <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-white"></span> Live
+                    </div>
+                </div>
+                <div class="p-4">
+                    <div class="mb-4 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-white">Fantasy Realms</h3>
+                            <p class="text-xs text-gray-400">Digital Painting • Fantasy</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="flex items-center gap-1 text-primary">
+                                <span class="material-symbols-outlined text-sm">timer</span>
+                                <span class="font-mono text-sm font-bold">01:45:30</span>
+                            </div>
+                            <p class="text-xs text-gray-400">Remaining</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-xs font-medium">
+                            <span class="text-primary">2.8k Votes</span>
+                            <span class="text-secondary">3.1k Votes</span>
+                        </div>
+                        <div class="h-2 w-full overflow-hidden rounded-full bg-[#121212]">
+                            <div class="flex h-full w-full">
+                                <div class="h-full bg-primary shadow-[0_0_10px_rgba(229,6,214,0.5)]" style="width: 48%"></div>
+                                <div class="h-full bg-secondary shadow-[0_0_10px_rgba(6,229,214,0.5)]" style="width: 52%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex gap-2">
+                        <button class="flex-1 rounded bg-white/5 py-2 text-xs font-bold text-white transition-colors hover:bg-primary hover:text-white">Vote Left</button>
+                        <button class="flex-1 rounded bg-white/5 py-2 text-xs font-bold text-white transition-colors hover:bg-secondary hover:text-[#121212]">Vote Right</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Battle Card 3 -->
+            <div class="group relative overflow-hidden rounded-xl border border-white/10 bg-[#1e1e1e]/60 backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg">
+                <div class="relative h-64 w-full">
+                    <div class="absolute inset-0 flex">
+                        <div class="relative h-full w-1/2 overflow-hidden border-r border-black/50">
+                            <div class="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="Glitch art style portrait with distorted colors" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBiTt-d2IuZz3rbyS49aB7Kb45kU4U2Crt_1lJyEuDjv90zgcIEmajYakvitkuYMPUnoXqtK54VUFKQqRRkRh344zrAl4E7SGVtuud3zRBASeOK9JMXXdsjx8Riw7qMCjW-x_vC0GL5g7oOogG1z4GhADH-ahaskVgSzH8xePwPzNSB7y7sY1eArragGaBIpONzRNlbUpK5pk3INi2yOZf0fWb-wqe1uHl-EoIuPnPAvgFH4Z9BeA525StBo8mxSmWZcvz1obcASFU');">
+                            </div>
+                            <div class="absolute bottom-2 left-2 flex items-center gap-2">
+                                <div class="h-8 w-8 rounded-full border-2 border-primary bg-gray-800 bg-cover bg-center" data-alt="Avatar of user GlitchMaster" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAPJMF-02MoUsbhTOgbaYLtbslOSPs4wGAKCS5Td-z0j6aLVMK9vOg0oNPEpsw3xr2zmUCa56ognStmXQxtox9rQ28kMTnm9iFcyvMDbRzEJGLye3sXE6Wl5EKepSf8FSqi9kdpu9tplLm9W4J2cNzu_OpVLNdCrlgDYY8OJk6YSs2Iqs5JgLg0WoCDiUHnEOU2QEQBOwdcTJN8bEHdewaPP8b-NeHZkxt7yB8MLEGM3ixuQ7PLCgLogcN-MeYrtKCCVJYYC81a2i0');"></div>
+                                <span class="text-xs font-bold text-white shadow-black drop-shadow-md">GlitchMaster</span>
+                            </div>
+                        </div>
+                        <div class="relative h-full w-1/2 overflow-hidden">
+                            <div class="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="Minimalist geometric vector art" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBEaUDFxZy5EaFr66-o55d12ML4lQ9hqtloS4goTwaUERFiB-V6Pprt81Du5bmPw4wxHsJ0PalTPwsm26lG1lR7bGQ0FLWKZwSn3nx6xxyxuZ_J7ZYkk7iWKktOpTPYgsoLxWQFF3EZtRElW7wsWn8a3tOKOKom2zQhpYoN5stxBj1330Q6EDPRTt0PIV5vU1H5YhxFXtOvm1moWPgxWWQt3DL5s4pap6g-nNQpByeQmN5UAUfS6d8iwbCPH4TlFTvhUfMLCO2ELiE');">
+                            </div>
+                            <div class="absolute bottom-2 right-2 flex flex-row-reverse items-center gap-2">
+                                <div class="h-8 w-8 rounded-full border-2 border-secondary bg-gray-800 bg-cover bg-center" data-alt="Avatar of user VectorVixen" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBx_ZK2JmHJIdsXNI-BWQ_OygQ0EHeGH7gTueENtZIwplzTRAewk-yWUwD4kGZUIAI2F9hcZQyyNve3WWO9wpvrGlTPr28F--JtTLGASSb-U1pY1M2weX8ma3ouBDasrV4gxrlMU-rTNo7HuHSGsP_mrSWuzyygoGLFp5iU3zK78mgNtcRacPyEwRLxvvlLLLPsKkZgesMelnRcz1HflGpY9mmICZTD8G7nM2YqQgY701MZ2x6Iduhc7JWHuk4x6rj6RNey0e9QGuo');"></div>
+                                <span class="text-xs font-bold text-white shadow-black drop-shadow-md">VectorVixen</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#121212] border border-white/20 font-black italic text-white shadow-xl z-10">VS</div>
+                    <div class="absolute top-3 left-3 flex items-center gap-1 rounded bg-red-500/90 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+                        <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-white"></span> Live
+                    </div>
+                </div>
+                <div class="p-4">
+                    <div class="mb-4 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-white">Style Wars</h3>
+                            <p class="text-xs text-gray-400">Abstract • Mixed Media</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="flex items-center gap-1 text-primary">
+                                <span class="material-symbols-outlined text-sm">timer</span>
+                                <span class="font-mono text-sm font-bold">00:12:45</span>
+                            </div>
+                            <p class="text-xs text-red-400 font-bold">Ending Soon</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-xs font-medium">
+                            <span class="text-primary">850 Votes</span>
+                            <span class="text-secondary">420 Votes</span>
+                        </div>
+                        <div class="h-2 w-full overflow-hidden rounded-full bg-[#121212]">
+                            <div class="flex h-full w-full">
+                                <div class="h-full bg-primary shadow-[0_0_10px_rgba(229,6,214,0.5)]" style="width: 67%"></div>
+                                <div class="h-full bg-secondary shadow-[0_0_10px_rgba(6,229,214,0.5)]" style="width: 33%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex gap-2">
+                        <button class="flex-1 rounded bg-white/5 py-2 text-xs font-bold text-white transition-colors hover:bg-primary hover:text-white">Vote Left</button>
+                        <button class="flex-1 rounded bg-white/5 py-2 text-xs font-bold text-white transition-colors hover:bg-secondary hover:text-[#121212]">Vote Right</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-8 flex justify-center sm:hidden">
+            <a class="flex w-full items-center justify-center rounded-lg border border-white/10 bg-white/5 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-white/10" href="#">
+                View All Battles
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Events Teaser (Timer Component) -->
+<section class="border-t border-white/5 bg-[#121212] py-20">
+    <div class="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+        <span class="mb-4 inline-block rounded-full bg-purple-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-purple-400">Next Major Tournament</span>
+        <h2 class="mb-10 text-3xl font-black tracking-tight text-white sm:text-4xl">Neon Nights Championship</h2>
+        <div class="flex flex-wrap justify-center gap-4 sm:gap-8">
+            <div class="flex flex-col items-center gap-2">
+                <div class="flex h-20 w-20 items-center justify-center rounded-2xl border border-white/10 bg-[#1e1e1e] shadow-lg sm:h-24 sm:w-24">
+                    <span class="text-3xl font-black text-white sm:text-4xl">03</span>
+                </div>
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Days</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <div class="flex h-20 w-20 items-center justify-center rounded-2xl border border-white/10 bg-[#1e1e1e] shadow-lg sm:h-24 sm:w-24">
+                    <span class="text-3xl font-black text-white sm:text-4xl">12</span>
+                </div>
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Hours</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <div class="flex h-20 w-20 items-center justify-center rounded-2xl border border-white/10 bg-[#1e1e1e] shadow-lg sm:h-24 sm:w-24">
+                    <span class="text-3xl font-black text-primary sm:text-4xl">45</span>
+                </div>
+                <span class="text-xs font-bold uppercase tracking-wider text-primary">Minutes</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <div class="flex h-20 w-20 items-center justify-center rounded-2xl border border-white/10 bg-[#1e1e1e] shadow-lg sm:h-24 sm:w-24">
+                    <span class="text-3xl font-black text-white sm:text-4xl">20</span>
+                </div>
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Seconds</span>
+            </div>
+        </div>
+        <div class="mt-12">
+            <button class="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-bold text-[#121212] transition-transform hover:scale-105">
+                <span class="material-symbols-outlined text-lg">notifications</span>
+                Remind Me
+            </button>
+        </div>
+    </div>
+</section>
+
+<section class="py-20 px-4 border-t border-white/5 font-body">
+    <div class="max-w-5xl mx-auto rounded-3xl overflow-hidden relative shadow-neon">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBAqGiS2goHWsBRpiLzqa-HQmOUCLIWaEnqMAK-4NDODQPbvQ6cYhRLGgMGqJm-muqQwcKc9pXn1aondyysSKwQPoVIg9pKF-52dKphwBa8tu9uO77MR6lJFvnTXiqhTWvK9Z9Al2WzonFMILipCJ2FLKO41llg9UfMdTxRyeiPuPp3xKmSP8RE8ikI_XPCDSv2UUzq6f4E_Hdaoz5WZzDCO6f1DdQfFfBNFR6KfMTTz1VnXkOgzg0N5GwRrO4Mz6nrqcS-MYFIoh8');"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-background-dark via-background-dark/90 to-primary/40"></div>
+        <div class="relative z-10 p-12 md:p-20 flex flex-col md:flex-row items-center justify-between gap-10">
+            <div class="max-w-xl">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4 font-display">Ready to Dominate?</h2>
+                <p class="text-gray-300 text-lg mb-8">Create your free account today and get 500 Credits to enter your first Rookie Tournament.</p>
+                <div class="flex gap-4">
+                    <button class="px-8 py-3 bg-white text-background-dark font-bold rounded-lg hover:bg-gray-200 transition-colors">Sign Up Free</button>
+                    <button class="px-8 py-3 bg-transparent border border-white/30 text-white font-bold rounded-lg hover:bg-white/10 transition-colors">View Bracket</button>
+                </div>
+            </div>
+            <div class="hidden md:flex flex-col items-center justify-center w-32 h-32 rounded-full border-4 border-primary bg-background-dark shadow-neon relative">
+                <span class="text-3xl font-bold text-white">S4</span>
+                <span class="text-xs text-primary uppercase tracking-widest">Season</span>
+            </div>
+        </div>
+    </div>
+</section>
