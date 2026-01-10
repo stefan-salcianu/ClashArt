@@ -1,28 +1,27 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-// Asigura-te ca ai namespace-ul corect
+
 namespace ClashArt.Models
 {
     public class Post
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Descrierea este obligatorie.")]
         public string Description { get; set; }
 
-        [Required]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; } // Am adăugat '?' (Nullable)
+
+        public string? ProofOfWorkVideoUrl { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // --- Relatii ---
+        // --- Relații ---
 
         public int CompetitionThemeId { get; set; }
         public virtual CompetitionTheme Theme { get; set; }
 
-        // Aici eroarea ar trebui să dispară acum
-        public string UserId { get; set; }
+        public string? UserId { get; set; } // Am adăugat '?' (Nullable) pentru a evita validarea automată
 
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; }
