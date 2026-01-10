@@ -1,8 +1,231 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model ClashArt.Models.HomeViewModel
+
+@{
+    ViewData["Title"] = "The Arena";
+
+    // Date inițiale calculate pe server
+    double progressPercentage = 0;
+    long remainingSeconds = 0;
+
+    if (Model.ActiveTheme != null)
+    {
+        var totalDuration = (Model.ActiveTheme.EndDate - Model.ActiveTheme.StartDate).TotalSeconds;
+        var elapsed = (DateTime.Now - Model.ActiveTheme.StartDate).TotalSeconds;
+
+        if (totalDuration > 0)
+        {
+            progressPercentage = (elapsed / totalDuration) * 100;
+            if (progressPercentage > 100) progressPercentage = 100;
+        }
+
+        var timeSpan = Model.ActiveTheme.EndDate - DateTime.Now;
+        if (timeSpan.TotalSeconds > 0)
+        {
+            remainingSeconds = (long)timeSpan.TotalSeconds;
+        }
+    }
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .glass-panel {
+        background: rgba(35, 35, 35, 0.4);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Masonry Layout corect */
+    .masonry-grid {
+        column-count: 1;
+        column-gap: 1.5rem;
+    }
+
+    .masonry-item {
+        break-inside: avoid;
+        margin-bottom: 1.5rem;
+    }
+
+    @@media (min-width: 640px) {
+        .masonry-grid {
+            column-count: 2;
+        }
+    }
+    @@media (min-width: 1024px) {
+        .masonry-grid {
+            column-count: 3;
+        }
+    }
+    @@media (min-width: 1280px) {
+        .masonry-grid {
+            column-count: 4;
+        }
+    }
+</style>
+
+<div class="mx-auto flex w-full max-w-[1400px] flex-col px-4 py-8 md:px-8">
+
+    @if (Model.ActiveTheme != null)
+    {
+        <section class="glass-panel relative mb-10 overflow-hidden rounded-xl border-l-4 border-l-primary p-0 shadow-xl">
+            <div class="absolute inset-0 -z-10 bg-cover bg-center opacity-40"
+                 style="background-image: url('@(string.IsNullOrEmpty(Model.ActiveTheme.ReferenceImageUrl) ? "https://images.unsplash.com/photo-1555680202-c86f0e12f086" : Model.ActiveTheme.ReferenceImageUrl)');">
+            </div>
+            <div class="absolute inset-0 -z-10 bg-gradient-to-r from-background-dark via-background-dark/80 to-transparent"></div>
+
+            <div class="flex flex-col items-center justify-between gap-8 p-8 lg:flex-row">
+                <div class="flex max-w-2xl flex-col gap-4">
+                    <div class="flex items-center gap-3">
+                        <span class="animate-pulse rounded bg-red-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-lg">Live Battle</span>
+                        <p class="text-sm font-medium text-accent-blue">Active Competition</p>
+                    </div>
+
+                    <h1 class="font-display text-4xl font-black uppercase italic leading-none tracking-tighter text-white sm:text-5xl lg:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+                        @Model.ActiveTheme.Title
+                    </h1>
+
+                    <p class="max-w-md text-base text-gray-300">
+                        @Model.ActiveTheme.Description
+                    </p>
+
+                    <div class="mt-2 w-full max-w-md">
+                        <div class="flex justify-between text-xs font-medium uppercase text-text-subtle">
+                            <span>Start</span>
+                            <span class="text-white">@Math.Round(progressPercentage)% Complete</span>
+                            <span>End</span>
+                        </div>
+                        <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-800">
+                            <div class="h-full rounded-full bg-gradient-to-r from-primary to-accent-blue shadow-neon"
+                                 style="width: @((int)progressPercentage)%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center gap-4 rounded-xl border border-white/10 bg-black/40 p-6 backdrop-blur-sm">
+                    <p class="text-xs font-bold uppercase tracking-widest text-text-subtle">Time Remaining</p>
+
+                    <div class="flex gap-4" id="countdown-timer" data-seconds="@remainingSeconds">
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="days">00</div>
+                            <span class="text-[10px] uppercase text-text-subtle">Days</span>
+                        </div>
+                        <span class="mt-2 text-2xl font-bold text-primary">:</span>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="hours">00</div>
+                            <span class="text-[10px] uppercase text-text-subtle">Hours</span>
+                        </div>
+                        <span class="mt-2 text-2xl font-bold text-primary">:</span>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="minutes">00</div>
+                            <span class="text-[10px] uppercase text-text-subtle">Mins</span>
+                        </div>
+                    </div>
+
+                    <a href="/Posts/Create" class="mt-2 w-full rounded-lg bg-primary py-3 px-6 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-primary-hover hover:shadow-neon text-center">
+                        Submit Entry
+                    </a>
+                </div>
+            </div>
+        </section>
+    }
+    else
+    {
+        <section class="glass-panel mb-10 p-8 text-center rounded-xl">
+            <h1 class="text-3xl font-bold text-white">The Arena is Quiet...</h1>
+            <p class="text-gray-400 mt-2">No active battles right now. Check back later!</p>
+        </section>
+    }
+
+    <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap gap-2">
+            <button class="flex items-center gap-2 rounded-full border border-primary bg-primary/20 px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white">
+                <span class="material-symbols-outlined text-[18px]">local_fire_department</span> Trending
+            </button>
+            <button class="flex items-center gap-2 rounded-full border border-white/10 bg-[#1e1e1e] px-4 py-2 text-sm font-medium text-text-subtle transition hover:bg-[#2a2a2a] hover:text-white">
+                <span class="material-symbols-outlined text-[18px]">new_releases</span> Newest
+            </button>
+        </div>
+    </div>
+
+    <div class="masonry-grid w-full">
+        @foreach (var post in Model.Posts)
+        {
+            <article class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark shadow-lg transition-transform hover:-translate-y-1">
+                <div class="relative">
+                    <img src="@post.ImageUrl" alt="Art" class="h-auto w-full object-cover transition duration-500 group-hover:scale-105" />
+
+                    @if (post.Theme != null && post.Theme.Title != "Freestyle Gallery")
+                    {
+                        <div class="absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-xs font-bold text-primary backdrop-blur-md border border-primary/30">
+                            @post.Theme.Title
+                        </div>
+                    }
+
+                    <div class="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-black/90 to-transparent"></div>
+                </div>
+
+                <div class="p-4 pt-2">
+                    <div class="flex items-start justify-between">
+                        <h3 class="line-clamp-2 text-sm font-bold text-white leading-snug">
+                            @post.Description
+                        </h3>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="size-8 rounded-full bg-gray-700 bg-cover bg-center ring-2 ring-black"
+                                 style="background-image: url('@(string.IsNullOrEmpty(post.User?.AvatarUrl) ? "https://i.pravatar.cc/150" : post.User.AvatarUrl)')">
+                            </div>
+                            <span class="text-sm font-medium text-gray-300">
+                                @(post.User?.DisplayName ?? "Unknown")
+                            </span>
+                        </div>
+
+                        <button class="flex items-center gap-1.5 rounded-full bg-[#121212] border border-accent-blue/30 px-3 py-1.5 transition hover:bg-accent-blue/10 hover:border-accent-blue group/btn">
+                            <span class="material-symbols-outlined text-[18px] text-accent-blue" style="font-variation-settings: 'FILL' 1;">swords</span>
+                            <span class="text-xs font-bold text-accent-blue">0</span>
+                        </button>
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
 </div>
+
+<div class="fixed bottom-8 right-8 z-40">
+    <a href="/Posts/Create" class="group flex items-center gap-2 rounded-full bg-primary px-6 py-4 shadow-[0_0_20px_rgba(229,6,214,0.6)] transition-all hover:-translate-y-1 hover:bg-primary-hover hover:shadow-[0_0_30px_rgba(229,6,214,0.8)] active:scale-95">
+        <span class="material-symbols-outlined text-white">add_photo_alternate</span>
+        <span class="text-base font-bold text-white">Submit Artwork</span>
+    </a>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const timerElement = document.getElementById("countdown-timer");
+        if (!timerElement) return;
+
+        // Luăm timpul total rămas (în secunde) din atributul data-seconds generat de C#
+        let totalSeconds = parseInt(timerElement.getAttribute("data-seconds"));
+
+        function updateTimer() {
+            if (totalSeconds <= 0) {
+                // Opțional: Reîncarcă pagina când expiră timpul
+                return;
+            }
+
+            totalSeconds--;
+
+            const days = Math.floor(totalSeconds / (3600 * 24));
+            const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+            // Actualizăm textul în elementele HTML
+            document.getElementById("days").innerText = String(days).padStart(2, '0');
+            document.getElementById("hours").innerText = String(hours).padStart(2, '0');
+            document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
+        }
+
+        // Pornim intervalul să ruleze la fiecare secundă
+        setInterval(updateTimer, 1000);
+        updateTimer(); // Rulăm o dată imediat ca să nu așteptăm 1s
+    });
+</script>

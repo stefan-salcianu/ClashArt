@@ -11,5 +11,7 @@ namespace ClashArt.Data
         {
         }
         public DbSet<Artist> Students { get; set; }
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<CompetitionTheme> CompetitionThemes { get; set; }
     }
 }

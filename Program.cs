@@ -11,6 +11,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
@@ -18,6 +19,9 @@ builder.Services.AddControllersWithViews();
 
 
 var app = builder.Build();
+
+// APELEAZA SEEDER-UL LA PORNIRE
+await ClashArt.Data.DbSeeder.SeedData(app.Services);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -39,11 +43,17 @@ app.UseAuthorization();
 app.MapStaticAssets();
 
 app.MapControllerRoute(
+    name: "arena",
+    pattern: "Arena",
+    defaults: new { controller = "Home", action = "Index" });
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Landing}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.MapRazorPages()
    .WithStaticAssets();
+
 
 app.Run();

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClashArt.Models
 {
+
     public class ApplicationUser: IdentityUser
     {
         [StringLength(100)]
@@ -18,6 +19,9 @@ namespace ClashArt.Models
         // Gamification
         public int Level { get; set; } = 1;
         public int Victories { get; set; } = 0;
+        public int ExperiencePoints { get; set; } = 0;
+        public virtual ICollection<Post> Posts { get; set; }
 
     }
 }
+
