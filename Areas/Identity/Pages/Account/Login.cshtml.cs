@@ -116,7 +116,7 @@ namespace ClashArt.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    return RedirectToRoute("arena");
+                    return RedirectToRoute("default");
                 }
                 if (result.RequiresTwoFactor)
                 {

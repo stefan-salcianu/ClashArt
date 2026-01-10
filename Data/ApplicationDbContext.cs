@@ -41,6 +41,9 @@ namespace ClashArt.Data
                       .HasForeignKey(f => f.FollowedId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
+            builder.Entity<ApplicationUser>()
+           .HasIndex(u => u.DisplayName)
+           .IsUnique();
         }
     }
 }

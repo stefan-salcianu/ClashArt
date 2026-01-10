@@ -2,8 +2,7 @@
 
 @{
     ViewData["Title"] = Model.DisplayName;
-    Layout = null; // Setăm null temporar ca să folosim structura ta HTML completă.
-                   // Dacă ai un _Layout.cshtml deja configurat cu Tailwind, șterge liniile de <head> și <body> de mai jos.
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -16,9 +15,7 @@
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
-
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
     <script>
@@ -80,45 +77,37 @@
         <div class="flex flex-1 justify-end gap-6">
             @if (User.Identity.IsAuthenticated)
             {
-                        @using Microsoft.AspNetCore.Identity
-        @using ClashArt.Models
+                @using Microsoft.AspNetCore.Identity
+            @using ClashArt.Models
+            @inject UserManager<ApplicationUser> UserManager
+            @inject SignInManager<ApplicationUser> SignInManager
 
-        @inject UserManager<ApplicationUser> UserManager
-        @inject SignInManager<ApplicationUser> SignInManager
+                <div class="flex flex-1 justify-end gap-6">
+                @if (SignInManager.IsSignedIn(User))
+                    {
+                        var currentUser = await UserManager.GetUserAsync(User);
+                        var nameToShow = currentUser?.DisplayName ?? currentUser?.UserName;
 
-        <div class="flex flex-1 justify-end gap-6">
-            @if (SignInManager.IsSignedIn(User))
-            {
-                
-                    var currentUser = await UserManager.GetUserAsync(User);
-                    // Dacă DisplayName e gol, afișăm Email-ul ca să nu fie gol, dar tăiem partea cu @gmail.com doar vizual dacă vrei
-                    var nameToShow = currentUser?.DisplayName ?? currentUser?.UserName;
-                
-
-                <div class="flex items-center gap-3">
-                    <span class="text-sm text-gray-400">
-                        Salut, <span class="font-bold text-primary">@nameToShow</span>
-                    </span>
-            
-                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                        <button type="submit" class="text-sm font-bold text-white hover:text-primary transition-colors cursor-pointer">
-                            Logout
-                        </button>
-                    </form>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm text-gray-400">
+                                Salut, <span class="font-bold text-primary">@nameToShow</span>
+                            </span>
+                            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Landing")">
+                              
+                                <button type="submit" class="text-sm font-bold text-white hover:text-primary transition-colors cursor-pointer">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="flex gap-3">
+                            <a asp-area="Identity" asp-page="/Account/Login" class="flex items-center justify-center rounded-lg h-10 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-colors">Login</a>
+                            <a asp-area="Identity" asp-page="/Account/Register" class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-neon transition-all">Join Now</a>
+                        </div>
+                    }
                 </div>
-            }
-            else
-            {
-                <div class="flex gap-3">
-                     <a asp-area="Identity" asp-page="/Account/Login" class="flex items-center justify-center rounded-lg h-10 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-colors">
-                        Login
-                    </a>
-                    <a asp-area="Identity" asp-page="/Account/Register" class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-neon transition-all">
-                        Join Now
-                    </a>
-                </div>
-            }
-        </div>
             }
             else
             {
@@ -136,7 +125,6 @@
                  style='background-image: url("https://images.unsplash.com/photo-1535930749574-1399327ce78f?q=80&w=2536&auto=format&fit=crop");'>
             </div>
             <div class="absolute inset-0 bg-gradient-to-t from-[#121212] via-[#121212]/40 to-transparent"></div>
-
             <div class="absolute top-4 right-4 bg-black/60 backdrop-blur-md rounded-full px-4 py-1.5 border border-primary/30 flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                 <span class="text-xs font-medium text-white/90">Online in Arena</span>
@@ -152,7 +140,6 @@
                              class="w-full h-full object-cover"
                              alt="@Model.DisplayName Avatar" />
                     </div>
-
                     <div class="absolute -bottom-2 -right-2 md:right-0 z-20 bg-[#121212] rounded-full p-1">
                         <div class="bg-gradient-to-tr from-primary to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20 shadow-lg">
                             LVL @Model.Level
@@ -163,120 +150,165 @@
                 <div class="flex-1 flex flex-col gap-2 pb-2">
                     <div class="flex flex-col md:flex-row md:items-center gap-3">
                         <h1 class="text-3xl md:text-4xl font-bold text-white tracking-tight">@Model.DisplayName</h1>
-
                         <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary shadow-[0_0_10px_rgba(229,6,214,0.15)] w-fit">
                             <span class="material-symbols-outlined text-sm">verified</span>
                             <span class="text-xs font-bold uppercase tracking-wider">Art Warlord</span>
                         </div>
                     </div>
-
                     <p class="text-gray-400 max-w-2xl text-base font-light">
                         @(Model.Bio ?? "Acest artist este un mister. Încă nu și-a scris povestea.")
                     </p>
                 </div>
 
-                <div class="flex pb-2">
+                <div class="flex pb-2 gap-3">
                     @if (Model.IsCurrentUser)
                     {
                         <a asp-controller="Users" asp-action="Edit" class="group relative flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-white/10 border border-white/20 px-8 py-3 text-white font-bold transition-all hover:bg-white/20 hover:scale-105 active:scale-95 w-full md:w-auto no-underline">
                             <span class="material-symbols-outlined relative z-10">edit</span>
                             <span class="relative z-10 tracking-wider">EDIT PROFILE</span>
                         </a>
+                        <a asp-controller="Users" asp-action="Requests" class="group relative flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-white/5 border border-white/10 px-6 py-3 text-white font-bold transition-all hover:bg-primary/20 hover:border-primary/50 hover:text-primary active:scale-95 flex-1 md:flex-none md:w-auto no-underline">
+                            <span class="material-symbols-outlined relative z-10 text-[20px]">notifications_active</span>
+                            <span class="relative z-10 tracking-wider text-sm">REQUESTS</span>
+                            <span class="absolute top-3 right-3 w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                        </a>
+                    }
+                    else if (Model.IsPending)
+                    {
+                        <form asp-controller="Users" asp-action="Unfollow" asp-route-userId="@Model.Id" method="post" class="w-full md:w-auto">
+                            <button type="submit" class="group relative flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gray-800/80 border border-gray-700 px-8 py-3 text-gray-400 font-bold transition-all hover:bg-red-900/20 hover:text-red-400 hover:border-red-900/50 active:scale-95 w-full">
+                                <span class="material-symbols-outlined relative z-10">pending</span>
+                                <span class="relative z-10 tracking-wider">REQUESTED</span>
+                            </button>
+                        </form>
+                    }
+                    else if (Model.IsFollowing)
+                    {
+                        <form asp-controller="Users" asp-action="Unfollow" asp-route-userId="@Model.Id" method="post" class="w-full md:w-auto">
+                            <button type="submit" class="group relative flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-transparent border border-white/20 px-8 py-3 text-white font-bold transition-all hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 active:scale-95 w-full">
+                                <span class="material-symbols-outlined relative z-10">person_remove</span>
+                                <span class="relative z-10 tracking-wider">UNFOLLOW</span>
+                            </button>
+                        </form>
+                        <button class="group relative flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-white/5 border border-white/10 px-6 py-3 text-white font-bold transition-all hover:bg-primary hover:border-primary active:scale-95 w-full md:w-auto">
+                            <span class="material-symbols-outlined relative z-10">swords</span>
+                        </button>
                     }
                     else
                     {
-                        <button class="group relative flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-8 py-3 text-white font-bold transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(229,6,214,0.6)] active:scale-95 w-full md:w-auto">
-                            <div class="absolute inset-0 bg-white/20 translate-y-full transition-transform group-hover:translate-y-0 duration-300"></div>
-                            <span class="material-symbols-outlined relative z-10">swords</span>
-                            <span class="relative z-10 tracking-wider">CHALLENGE</span>
-                        </button>
+                        <form asp-controller="Users" asp-action="Follow" asp-route-userId="@Model.Id" method="post" class="w-full md:w-auto">
+                            <button type="submit" class="group relative flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-8 py-3 text-white font-bold transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(229,6,214,0.6)] active:scale-95 w-full">
+                                <div class="absolute inset-0 bg-white/20 translate-y-full transition-transform group-hover:translate-y-0 duration-300"></div>
+                                <span class="material-symbols-outlined relative z-10">person_add</span>
+                                <span class="relative z-10 tracking-wider">FOLLOW</span>
+                            </button>
+                        </form>
                     }
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="bg-white/5 backdrop-blur-sm border border-white/5 rounded-xl p-6 flex flex-col gap-1 hover:border-primary/30 transition-colors group">
-                <div class="flex justify-between items-start">
-                    <span class="text-gray-400 text-sm font-medium uppercase tracking-wider">Victories</span>
-                    <span class="material-symbols-outlined text-primary/50 group-hover:text-primary group-hover:scale-110 transition-all">trophy</span>
-                </div>
-                <span class="text-3xl font-bold text-white mt-2">@Model.Victories</span>
-                <span class="text-xs text-green-400 flex items-center gap-1">
-                    <span class="material-symbols-outlined text-xs">trending_up</span> Active Duelist
-                </span>
-            </div>
-
-            <div class="bg-white/5 backdrop-blur-sm border border-white/5 rounded-xl p-6 flex flex-col gap-1 hover:border-primary/30 transition-colors group">
-                <div class="flex justify-between items-start">
-                    <span class="text-gray-400 text-sm font-medium uppercase tracking-wider">Followers</span>
-                    <span class="material-symbols-outlined text-primary/50 group-hover:text-primary group-hover:scale-110 transition-all">group</span>
-                </div>
-                <span class="text-3xl font-bold text-white mt-2">@Model.FollowersCount</span>
-                <span class="text-xs text-gray-500">Growing community</span>
-            </div>
-
-            <div class="bg-white/5 backdrop-blur-sm border border-white/5 rounded-xl p-6 flex flex-col gap-1 hover:border-primary/30 transition-colors group">
-                <div class="flex justify-between items-start">
-                    <span class="text-gray-400 text-sm font-medium uppercase tracking-wider">Total Votes</span>
-                    <span class="material-symbols-outlined text-primary/50 group-hover:text-primary group-hover:scale-110 transition-all">thumb_up</span>
-                </div>
-                <span class="text-3xl font-bold text-white mt-2">12.5k</span>
-                <span class="text-xs text-primary">Fan favorite</span>
-            </div>
-        </div>
-
-        <div class="border-b border-white/10 mt-4">
-            <div class="flex gap-8">
-                <a class="relative pb-4 px-2 text-white font-bold text-sm tracking-wide cursor-pointer group" href="#">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">history_edu</span>
-                        Battle History
+        <div class="mt-12">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div class="bg-white/5 backdrop-blur-sm border border-white/5 rounded-xl p-6 flex flex-col gap-1 hover:border-primary/30 transition-colors group">
+                    <div class="flex justify-between items-start">
+                        <span class="text-gray-400 text-sm font-medium uppercase tracking-wider">Victories</span>
+                        <span class="material-symbols-outlined text-primary/50 group-hover:text-primary group-hover:scale-110 transition-all">trophy</span>
                     </div>
-                    <div class="absolute bottom-0 left-0 w-full h-0.5 bg-primary shadow-[0_0_10px_#e506d6]"></div>
-                </a>
-                <a class="relative pb-4 px-2 text-gray-500 hover:text-white transition-colors font-medium text-sm tracking-wide cursor-pointer group" href="#">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined">model_training</span>
-                        Training Grounds
-                    </div>
-                    <div class="absolute bottom-0 left-0 w-full h-0.5 bg-transparent group-hover:bg-white/20 transition-colors"></div>
-                </a>
-            </div>
-        </div>
+                    <span class="text-3xl font-bold text-white mt-2">@Model.Victories</span>
+                    <span class="text-xs text-green-400 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">trending_up</span> Active Duelist
+                    </span>
+                </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] transition-all duration-300">
-                <div class="aspect-[4/3] w-full bg-cover bg-center relative" style='background-image: url("https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=2370&auto=format&fit=crop");'>
-                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                        <button class="bg-white text-black px-6 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 text-sm">View Details</button>
+                <div class="bg-white/5 backdrop-blur-sm border border-white/5 rounded-xl p-6 flex flex-col gap-1 hover:border-primary/30 transition-colors group">
+                    <div class="flex justify-between items-start">
+                        <span class="text-gray-400 text-sm font-medium uppercase tracking-wider">Followers</span>
+                        <span class="material-symbols-outlined text-primary/50 group-hover:text-primary group-hover:scale-110 transition-all">group</span>
                     </div>
-                    <div class="absolute top-3 left-3">
-                        <span class="bg-primary/90 text-white text-[10px] font-bold px-2 py-1 rounded border border-white/20 uppercase tracking-wider shadow-lg">Victory</span>
+                    <span class="text-3xl font-bold text-white mt-2">@Model.FollowersCount</span>
+                    <span class="text-xs text-gray-500">Growing community</span>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-sm border border-white/5 rounded-xl p-6 flex flex-col gap-1 hover:border-primary/30 transition-colors group">
+                    <div class="flex justify-between items-start">
+                        <span class="text-gray-400 text-sm font-medium uppercase tracking-wider">Following</span>
+                        <span class="material-symbols-outlined text-primary/50 group-hover:text-primary group-hover:scale-110 transition-all">person_search</span>
+                    </div>
+                    <span class="text-3xl font-bold text-white mt-2">@Model.FollowingCount</span>
+                    <span class="text-xs text-primary">Allies</span>
+                </div>
+            </div>
+            @if (Model.HasAccess)
+            {
+                
+
+                <div class="border-b border-white/10 mt-4 mb-6">
+                    <div class="flex gap-8">
+                        <a class="relative pb-4 px-2 text-white font-bold text-sm tracking-wide cursor-pointer group" href="#">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">history_edu</span>
+                                Battle History
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-full h-0.5 bg-primary shadow-[0_0_10px_#e506d6]"></div>
+                        </a>
+                     
                     </div>
                 </div>
-                <div class="p-4 bg-[#1a1a1a]/80 backdrop-blur-sm">
-                    <h3 class="text-lg font-bold text-white mb-1 group-hover:text-primary transition-colors">Neon Samurai</h3>
-                    <div class="flex justify-between items-center mt-3 border-t border-white/5 pt-3">
-                        <div class="flex items-center gap-1.5 text-xs text-gray-400">
-                            <span class="material-symbols-outlined text-sm">calendar_today</span>
-                            <span>2 days ago</span>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] transition-all duration-300">
+                        <div class="aspect-[4/3] w-full bg-cover bg-center relative" style='background-image: url("https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=2370&auto=format&fit=crop");'>
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                                <button class="bg-white text-black px-6 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 text-sm">View Details</button>
+                            </div>
+                            <div class="absolute top-3 left-3">
+                                <span class="bg-primary/90 text-white text-[10px] font-bold px-2 py-1 rounded border border-white/20 uppercase tracking-wider shadow-lg">Victory</span>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-1 text-primary text-xs font-bold">
-                            <span class="material-symbols-outlined text-sm">favorite</span>
-                            <span>2.4k</span>
+                        <div class="p-4 bg-[#1a1a1a]/80 backdrop-blur-sm">
+                            <h3 class="text-lg font-bold text-white mb-1 group-hover:text-primary transition-colors">Neon Samurai</h3>
+                            <div class="flex justify-between items-center mt-3 border-t border-white/5 pt-3">
+                                <div class="flex items-center gap-1.5 text-xs text-gray-400">
+                                    <span class="material-symbols-outlined text-sm">calendar_today</span>
+                                    <span>2 days ago</span>
+                                </div>
+                                <div class="flex items-center gap-1 text-primary text-xs font-bold">
+                                    <span class="material-symbols-outlined text-sm">favorite</span>
+                                    <span>2.4k</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-span-1 sm:col-span-2 lg:col-span-2 flex items-center justify-center border-2 border-dashed border-gray-800 rounded-2xl bg-black/20 p-12 text-center text-gray-500">
+                        <div>
+                            <span class="material-symbols-outlined text-4xl mb-2">imagesmode</span>
+                            <p class="text-sm">More battle history coming soon from @Model.DisplayName</p>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="flex flex-col items-center justify-center py-24 px-4 text-center bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm mt-8 relative overflow-hidden">
 
-            <div class="col-span-1 sm:col-span-2 lg:col-span-2 flex items-center justify-center border-2 border-dashed border-gray-800 rounded-2xl bg-black/20 p-12 text-center text-gray-500">
-                <div>
-                    <span class="material-symbols-outlined text-4xl mb-2">imagesmode</span>
-                    <p class="text-sm">More battle history coming soon from @Model.DisplayName</p>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+                    <div class="w-20 h-20 rounded-full bg-[#121212] border border-white/10 flex items-center justify-center mb-6 shadow-2xl relative z-10">
+                        <span class="material-symbols-outlined text-4xl text-gray-400">lock</span>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-white mb-2 relative z-10">This Account is Private</h3>
+                    <p class="text-gray-400 max-w-sm mb-8 relative z-10">
+                        Follow this artist to see their battle history, stats, and gallery.
+                    </p>
+
+                    <div class="text-xs text-primary font-bold uppercase tracking-widest opacity-60 relative z-10">
+                        REQUEST ACCESS ABOVE
+                    </div>
                 </div>
-            </div>
-
+            }
         </div>
 
     </main>

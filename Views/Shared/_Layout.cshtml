@@ -114,7 +114,7 @@
                             <img src="@(user?.AvatarUrl ?? "https://placehold.co/100")" class="w-full h-full object-cover" />
                         </div>
                     </a>
-                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Landing")">
                         <button type="submit" class="flex items-center justify-center rounded-lg h-10 px-4 bg-white/5 hover:bg-red-500/20 hover:text-red-500 border border-white/10 text-white text-sm font-bold transition-colors">
                             Logout
                         </button>

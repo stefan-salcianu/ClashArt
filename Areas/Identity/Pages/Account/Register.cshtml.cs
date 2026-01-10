@@ -127,7 +127,7 @@ namespace ClashArt.Areas.Identity.Pages.Account
                     await _signInManager.SignInAsync(user, isPersistent: false);
 
                  
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToRoute("default");
 
                 }
                 foreach (var error in result.Errors)

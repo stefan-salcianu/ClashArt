@@ -26,8 +26,11 @@ namespace ClashArt.Models.ViewModels
         public int Level { get; set; }
         public int Victories { get; set; }
         public int FollowersCount { get; set; }
+        public int FollowingCount { get; set; } 
 
-        public bool IsCurrentUser { get; set; } 
-        public bool IsFollowing { get; set; }   
+        public bool IsCurrentUser { get; set; }
+        public bool IsFollowing { get; set; }
+        public bool IsPending { get; set; }
+        public bool HasAccess { get; set; }
     }
 }

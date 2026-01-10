@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using ClashArt.Data;
 using ClashArt.Models;
 using ClashArt.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClashArt.Controllers
 {
@@ -11,11 +13,13 @@ namespace ClashArt.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ApplicationDbContext _context;
 
-        public UsersController(UserManager<ApplicationUser> userManager, IWebHostEnvironment webHostEnvironment)
+        public UsersController(UserManager<ApplicationUser> userManager, IWebHostEnvironment webHostEnvironment, ApplicationDbContext context)
         {
             _userManager = userManager;
             _webHostEnvironment = webHostEnvironment;
+            _context = context;
         }
 
         [HttpGet]
@@ -41,6 +45,28 @@ namespace ClashArt.Controllers
             var currentUser = await _userManager.GetUserAsync(User);
             bool isMe = currentUser != null && currentUser.Id == targetUser.Id;
 
+            bool isFollowing = false;
+            bool isPending = false;
+
+            if (currentUser != null && !isMe)
+            {
+                var followRelation = await _context.Follows
+                    .FirstOrDefaultAsync(f => f.FollowerId == currentUser.Id && f.FollowedId == targetUser.Id);
+
+                if (followRelation != null)
+                {
+                    isFollowing = followRelation.IsAccepted; // True = Follow activ
+                    isPending = !followRelation.IsAccepted;  // True = Cerere în așteptare
+                }
+            }
+
+            var followersCount = await _context.Follows.CountAsync(f => f.FollowedId == targetUser.Id && f.IsAccepted);
+            var followingCount = await _context.Follows.CountAsync(f => f.FollowerId == targetUser.Id && f.IsAccepted);
+
+            
+            // Ai acces dacă: Ești TU SAU Profilul e Public SAU Ești deja Follower acceptat
+            bool hasAccess = isMe || !targetUser.IsPrivate || isFollowing;
+
             var model = new UserProfileViewModel
             {
                 Id = targetUser.Id,
@@ -50,9 +76,14 @@ namespace ClashArt.Controllers
                 IsPrivate = targetUser.IsPrivate,
                 Level = targetUser.Level,
                 Victories = targetUser.Victories,
+
                 IsCurrentUser = isMe,
-                FollowersCount = 0,
-                IsFollowing = false
+                FollowersCount = followersCount,
+                FollowingCount = followingCount,
+                IsFollowing = isFollowing,
+                IsPending = isPending,
+
+                HasAccess = hasAccess
             };
 
             return View(model);
@@ -66,7 +97,6 @@ namespace ClashArt.Controllers
 
             var model = new UserProfileViewModel
             {
-
                 Id = user.Id,
                 DisplayName = user.DisplayName ?? user.UserName,
                 Bio = user.Bio,
@@ -80,7 +110,10 @@ namespace ClashArt.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UserProfileViewModel model)
         {
-            
+            // 1. Aducem userul PRIMA DATĂ (Corecție critică!)
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
             ModelState.Remove("Id");
             ModelState.Remove("ProfileImage");
 
@@ -89,15 +122,26 @@ namespace ClashArt.Controllers
                 return View(model);
             }
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null) return NotFound();
+            // 2. Verificare Unicitate Nume
+            if (!string.IsNullOrWhiteSpace(model.DisplayName))
+            {
+                // Acum variabila 'user' există, deci nu mai dă eroare
+                bool nameExists = await _context.Users
+                    .AnyAsync(u => u.DisplayName == model.DisplayName && u.Id != user.Id);
 
-            // Actualizăm textele
+                if (nameExists)
+                {
+                    ModelState.AddModelError("DisplayName", "This name is already taken by another artist.");
+                    return View(model);
+                }
+            }
+
+            // 3. Actualizăm textele
             user.DisplayName = model.DisplayName;
             user.Bio = model.Bio;
             user.IsPrivate = model.IsPrivate;
 
-            // 4. LOGICA DE SALVARE POZĂ (Era ștearsă în codul tău anterior)
+            // 4. Logica de salvare poză
             if (model.ProfileImage != null && model.ProfileImage.Length > 0)
             {
                 string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "profiles");
@@ -130,11 +174,63 @@ namespace ClashArt.Controllers
 
             return View(model);
         }
+
+   
+
+        [HttpPost]
+        public async Task<IActionResult> Follow(string userId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null) return Challenge();
+
+            if (currentUser.Id == userId) return BadRequest("You cannot follow yourself.");
+
+            var existingFollow = await _context.Follows
+                .FirstOrDefaultAsync(f => f.FollowerId == currentUser.Id && f.FollowedId == userId);
+
+            if (existingFollow != null)
+            {
+                return RedirectToAction("Profile", new { id = userId });
+            }
+
+            var targetUser = await _userManager.FindByIdAsync(userId);
+            if (targetUser == null) return NotFound();
+
+            var follow = new Follow
+            {
+                FollowerId = currentUser.Id,
+                FollowedId = userId,
+                CreatedAt = DateTime.UtcNow,
+                IsAccepted = !targetUser.IsPrivate // Dacă e Private -> Pending (False)
+            };
+
+            _context.Follows.Add(follow);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Profile", new { id = userId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Unfollow(string userId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var follow = await _context.Follows
+                .FirstOrDefaultAsync(f => f.FollowerId == currentUser.Id && f.FollowedId == userId);
+
+            if (follow != null)
+            {
+                _context.Follows.Remove(follow);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Profile", new { id = userId });
+        }
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult SearchApi(string query)
         {
-            // Dacă e prea scurt textul, nu căutăm nimic
             if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
             {
                 return Json(new List<object>());
@@ -142,18 +238,75 @@ namespace ClashArt.Controllers
 
             var users = _userManager.Users
                 .Where(u => u.DisplayName.Contains(query) || u.UserName.Contains(query))
-                .Take(5) 
+                .Take(5)
                 .Select(u => new
                 {
                     id = u.Id,
                     displayName = u.DisplayName ?? u.UserName,
-                    avatarUrl = u.AvatarUrl ?? "https://placehold.co/100", 
+                    avatarUrl = u.AvatarUrl ?? "https://placehold.co/100",
                     level = u.Level,
                     isPrivate = u.IsPrivate
                 })
                 .ToList();
 
             return Json(users);
+        }
+        // --- ZONA DE FOLLOW REQUESTS ---
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Requests()
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null) return Challenge();
+
+            var requests = await _context.Follows
+                .Include(f => f.Follower) 
+                .Where(f => f.FollowedId == currentUser.Id && !f.IsAccepted)
+                .OrderByDescending(f => f.CreatedAt) 
+                .ToListAsync();
+
+            return View(requests);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AcceptRequest(string followerId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            // Căutăm cererea specifică
+            var request = await _context.Follows
+                .FirstOrDefaultAsync(f => f.FollowerId == followerId && f.FollowedId == currentUser.Id);
+
+            if (request == null) return NotFound();
+
+            request.IsAccepted = true;
+
+            request.CreatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Requests");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> DeclineRequest(string followerId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            // Căutăm cererea
+            var request = await _context.Follows
+                .FirstOrDefaultAsync(f => f.FollowerId == followerId && f.FollowedId == currentUser.Id);
+
+            if (request != null)
+            {
+                // O ștergem din bază (ca și cum n-ar fi existat)
+                _context.Follows.Remove(request);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Requests");
         }
     }
 }
