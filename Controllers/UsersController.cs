@@ -10,7 +10,6 @@ namespace ClashArt.Controllers
     public class UsersController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        // 1. AVEAM NEVOIE DE ASTA PENTRU POZE (O lipsea din codul tau)
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         public UsersController(UserManager<ApplicationUser> userManager, IWebHostEnvironment webHostEnvironment)
@@ -130,6 +129,31 @@ namespace ClashArt.Controllers
             }
 
             return View(model);
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult SearchApi(string query)
+        {
+            // Dacă e prea scurt textul, nu căutăm nimic
+            if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
+            {
+                return Json(new List<object>());
+            }
+
+            var users = _userManager.Users
+                .Where(u => u.DisplayName.Contains(query) || u.UserName.Contains(query))
+                .Take(5) 
+                .Select(u => new
+                {
+                    id = u.Id,
+                    displayName = u.DisplayName ?? u.UserName,
+                    avatarUrl = u.AvatarUrl ?? "https://placehold.co/100", 
+                    level = u.Level,
+                    isPrivate = u.IsPrivate
+                })
+                .ToList();
+
+            return Json(users);
         }
     }
 }

@@ -23,8 +23,6 @@
                         "primary": "#e506d6",
                         "secondary": "#00f3ff",
                         "neon-glow": "#e506d6",
-
-                        // Backgrounds
                         "background-dark": "#121212",
                         "nav-bg": "#121212",
                         "surface-dark": "#1e1e1e",
@@ -33,7 +31,6 @@
                     },
                     backgroundImage: {
                         'neon-gradient': 'linear-gradient(to right, #e506d6, #00f3ff)',
-                        'grid-pattern': "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23e506d6' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E\")",
                     },
                     boxShadow: {
                         'neon': '0 0 20px rgba(229, 6, 214, 0.5)',
@@ -63,16 +60,11 @@
                 background: #e506d6;
             }
 
-        /* Glassmorphism Utility (Available globally) */
         .glass-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .text-glow {
-            text-shadow: 0 0 10px rgba(229, 6, 214, 0.5);
         }
     </style>
 </head>
@@ -80,31 +72,64 @@
 
     <header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-white/10 bg-nav-bg/90 backdrop-blur-md px-6 py-4 lg:px-10">
         <div class="flex items-center gap-8">
-            <div class="flex items-center gap-3 text-white">
+            <a href="/" class="flex items-center gap-3 text-white hover:opacity-90 transition-opacity">
                 <div class="flex items-center justify-center size-8 rounded bg-primary/20 text-primary">
                     <span class="material-symbols-outlined text-2xl">swords</span>
-                    
                 </div>
                 <h2 class="text-white text-xl font-display font-bold leading-tight tracking-[-0.015em]">ClashArt</h2>
-            </div>
+            </a>
             <nav class="hidden md:flex items-center gap-8">
                 <a class="text-white/80 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Arena</a>
                 <a class="text-white/80 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Leaderboard</a>
                 <a class="text-white/80 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Marketplace</a>
             </nav>
         </div>
+
         <div class="flex flex-1 justify-end gap-6">
-            <div class="hidden sm:flex w-full max-w-xs items-center rounded-full bg-white/5 border border-white/10 px-3 py-2 focus-within:border-primary/50 focus-within:bg-white/10 transition-all">
-                <span class="material-symbols-outlined text-white/50 text-xl">search</span>
-                <input class="w-full bg-transparent border-none px-2 py-0 text-sm text-white placeholder-white/50 focus:ring-0 outline-none" placeholder="Search..." />
+
+            <div class="relative w-full max-w-xs group z-50 hidden sm:block">
+                <div class="flex items-center rounded-full bg-white/5 border border-white/10 px-3 py-2 focus-within:border-primary/50 focus-within:bg-white/10 transition-all">
+                    <span class="material-symbols-outlined text-white/50 text-xl">search</span>
+                    <input id="searchInput"
+                           autocomplete="off"
+                           class="w-full bg-transparent border-none px-2 py-0 text-sm text-white placeholder-white/50 focus:ring-0 outline-none"
+                           placeholder="Search artists..." />
+                </div>
+
+                <div id="searchResults" class="hidden absolute top-full left-0 w-full mt-2 bg-[#121212] border border-white/10 rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.8)] overflow-hidden backdrop-blur-md z-50">
+                </div>
             </div>
             <div class="flex gap-3">
-                <a asp-area="Identity" asp-page="/Account/Login" class="flex items-center justify-center rounded-lg h-10 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-colors">
-                    Login
-                </a>
-                <a asp-area="Identity" asp-page="/Account/Register" class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-neon transition-all">
-                    Join Now
-                </a> 
+                @using Microsoft.AspNetCore.Identity
+                @inject SignInManager<ApplicationUser> SignInManager
+                @inject UserManager<ApplicationUser> UserManager
+
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    // User Logat - Arătăm Avatar sau buton de Logout
+                    var user = await UserManager.GetUserAsync(User);
+                    <a asp-controller="Users" asp-action="Profile" asp-route-id="@user?.Id" class="flex items-center gap-2 px-3 py-1 rounded-lg hover:bg-white/5 transition-colors">
+                        <span class="text-sm font-bold text-primary">@user?.DisplayName</span>
+                        <div class="w-8 h-8 rounded-full overflow-hidden border border-white/20">
+                            <img src="@(user?.AvatarUrl ?? "https://placehold.co/100")" class="w-full h-full object-cover" />
+                        </div>
+                    </a>
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="flex items-center justify-center rounded-lg h-10 px-4 bg-white/5 hover:bg-red-500/20 hover:text-red-500 border border-white/10 text-white text-sm font-bold transition-colors">
+                            Logout
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    // User Nelogat
+                    <a asp-area="Identity" asp-page="/Account/Login" class="flex items-center justify-center rounded-lg h-10 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-colors">
+                        Login
+                    </a>
+                    <a asp-area="Identity" asp-page="/Account/Register" class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-neon transition-all">
+                        Join Now
+                    </a>
+                }
             </div>
         </div>
     </header>
@@ -124,6 +149,80 @@
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchInput = document.getElementById('searchInput');
+            const resultsContainer = document.getElementById('searchResults');
+            let debounceTimer;
+
+            if(searchInput && resultsContainer) {
+                searchInput.addEventListener('input', function (e) {
+                    const query = e.target.value;
+
+                    if (query.length < 2) {
+                        resultsContainer.classList.add('hidden');
+                        resultsContainer.innerHTML = '';
+                        return;
+                    }
+
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => {
+                        fetchUsers(query);
+                    }, 300);
+                });
+
+                // Închide dropdown-ul dacă dăm click în afară
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                        resultsContainer.classList.add('hidden');
+                    }
+                });
+            }
+
+            async function fetchUsers(query) {
+                try {
+                    const response = await fetch(`/Users/SearchApi?query=${query}`);
+                    if (!response.ok) throw new Error('Network error');
+
+                    const users = await response.json();
+                    renderResults(users);
+                } catch (error) {
+                    console.error('Search error:', error);
+                }
+            }
+
+            function renderResults(users) {
+                resultsContainer.innerHTML = '';
+
+                if (!users || users.length === 0) {
+                    resultsContainer.innerHTML = `
+                        <div class="p-4 text-center text-gray-500 text-sm">
+                            No warriors found.
+                        </div>`;
+                } else {
+                    users.forEach(user => {
+                        const profileLink = `/Users/Profile?id=${user.id}`;
+                        const html = `
+                            <a href="${profileLink}" class="flex items-center gap-3 p-3 hover:bg-white/10 transition-colors border-b border-white/5 last:border-0 cursor-pointer">
+                                <img src="${user.avatarUrl}" class="w-10 h-10 rounded-full object-cover border border-white/10" />
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-white text-sm font-bold truncate">${user.displayName}</span>
+                                        ${user.isPrivate ? '<span class="material-symbols-outlined text-[14px] text-gray-500 ml-1">lock</span>' : ''}
+                                    </div>
+                                    <div class="text-[10px] text-primary font-mono">LVL ${user.level}</div>
+                                </div>
+                            </a>
+                        `;
+                        resultsContainer.insertAdjacentHTML('beforeend', html);
+                    });
+                }
+                resultsContainer.classList.remove('hidden');
+            }
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -80,12 +80,45 @@
         <div class="flex flex-1 justify-end gap-6">
             @if (User.Identity.IsAuthenticated)
             {
+                        @using Microsoft.AspNetCore.Identity
+        @using ClashArt.Models
+
+        @inject UserManager<ApplicationUser> UserManager
+        @inject SignInManager<ApplicationUser> SignInManager
+
+        <div class="flex flex-1 justify-end gap-6">
+            @if (SignInManager.IsSignedIn(User))
+            {
+                
+                    var currentUser = await UserManager.GetUserAsync(User);
+                    // Dacă DisplayName e gol, afișăm Email-ul ca să nu fie gol, dar tăiem partea cu @gmail.com doar vizual dacă vrei
+                    var nameToShow = currentUser?.DisplayName ?? currentUser?.UserName;
+                
+
                 <div class="flex items-center gap-3">
-                    <span class="text-sm text-gray-400">Salut, @Model.DisplayName</span>
+                    <span class="text-sm text-gray-400">
+                        Salut, <span class="font-bold text-primary">@nameToShow</span>
+                    </span>
+            
                     <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                        <button type="submit" class="text-sm font-bold text-primary hover:text-white transition-colors">Logout</button>
+                        <button type="submit" class="text-sm font-bold text-white hover:text-primary transition-colors cursor-pointer">
+                            Logout
+                        </button>
                     </form>
                 </div>
+            }
+            else
+            {
+                <div class="flex gap-3">
+                     <a asp-area="Identity" asp-page="/Account/Login" class="flex items-center justify-center rounded-lg h-10 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-colors">
+                        Login
+                    </a>
+                    <a asp-area="Identity" asp-page="/Account/Register" class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-neon transition-all">
+                        Join Now
+                    </a>
+                </div>
+            }
+        </div>
             }
             else
             {
