@@ -99,8 +99,12 @@
                 <input class="w-full bg-transparent border-none px-2 py-0 text-sm text-white placeholder-white/50 focus:ring-0 outline-none" placeholder="Search..." />
             </div>
             <div class="flex gap-3">
-                <button class="flex items-center justify-center rounded-lg h-10 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-colors">Login</button>
-                <button class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-neon transition-all">Join Now</button>
+                <a asp-area="Identity" asp-page="/Account/Login" class="flex items-center justify-center rounded-lg h-10 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-colors">
+                    Login
+                </a>
+                <a asp-area="Identity" asp-page="/Account/Register" class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-neon transition-all">
+                    Join Now
+                </a> 
             </div>
         </div>
     </header>
