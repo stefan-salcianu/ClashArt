@@ -7,10 +7,10 @@ namespace ClashArt.Controllers
     public class ArtistsController : Controller
     {
         // Și în constructor
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext db;
         public ArtistsController(ApplicationDbContext context)
         {
-            _context = context;
+            db = context;
         }
     }
 }

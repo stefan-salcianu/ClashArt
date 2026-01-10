@@ -1,0 +1,87 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ClashArt</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { primary: "#e506d6", bgDark: "#121212" },
+                    fontFamily: { display: ["Inter", "sans-serif"] }
+                }
+            }
+        }
+    </script>
+    <style>body { background-color: #121212; color: white; font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="flex items-center justify-center min-h-screen relative overflow-hidden">
+
+    <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/90 to-[#121212] backdrop-blur-sm"></div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-[440px] px-4">
+        <div class="bg-[#181818]/90 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+            <div class="h-1 w-full bg-gradient-to-r from-transparent via-[#e506d6] to-transparent opacity-70"></div>
+
+            <div class="px-8 pt-8 pb-4 text-center">
+                <div class="inline-flex items-center justify-center size-12 text-[#e506d6] mb-3">
+                    <span class="material-symbols-outlined text-5xl">swords</span>
+                </div>
+                <h1 class="text-3xl font-bold tracking-tight text-white">ClashArt</h1>
+                <p class="text-gray-400 text-sm font-medium mt-1">Enter the arena.</p>
+            </div>
+
+            <div class="px-8 py-6">
+                <form id="account" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm mb-4 text-center font-bold"></div>
+
+                    <div class="mb-4">
+                        <label asp-for="Input.Email" class="block text-gray-300 text-xs font-bold uppercase tracking-wider mb-2 pl-1">Email</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 material-symbols-outlined text-[20px]">mail</span>
+                            <input asp-for="Input.Email" class="block w-full rounded-lg border-0 bg-[#252525] text-white ring-1 ring-white/10 focus:ring-2 focus:ring-[#e506d6] placeholder:text-gray-600 py-3 pl-10 sm:text-sm outline-none" placeholder="alias@gmail.com" autocomplete="username" />
+                        </div>
+                        <span asp-validation-for="Input.Email" class="text-red-500 text-xs mt-1 block"></span>
+                    </div>
+
+                    <div class="mb-6">
+                        <label asp-for="Input.Password" class="block text-gray-300 text-xs font-bold uppercase tracking-wider mb-2 pl-1">Password</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 material-symbols-outlined text-[20px]">lock</span>
+                            <input asp-for="Input.Password" class="block w-full rounded-lg border-0 bg-[#252525] text-white ring-1 ring-white/10 focus:ring-2 focus:ring-[#e506d6] placeholder:text-gray-600 py-3 pl-10 sm:text-sm outline-none" placeholder="••••••••" autocomplete="current-password" />
+                        </div>
+                        <span asp-validation-for="Input.Password" class="text-red-500 text-xs mt-1 block"></span>
+                    </div>
+
+                    <button type="submit" class="w-full flex items-center justify-center rounded-lg bg-[#e506d6] hover:bg-[#c005b4] py-3.5 px-4 text-sm font-bold text-white shadow-[0_0_15px_rgba(229,6,214,0.4)] transition-all">Log In</button>
+                </form>
+            </div>
+
+            <div class="bg-[#121212]/50 px-8 py-4 border-t border-white/5 flex items-center justify-center gap-2">
+                <span class="text-gray-400 text-sm">Don't have an account yet?</span>
+                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-white text-sm font-bold hover:text-[#e506d6] transition-colors">Join Now</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

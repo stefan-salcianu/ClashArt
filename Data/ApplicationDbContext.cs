@@ -4,12 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClashArt.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-
         }
         public DbSet<Artist> Students { get; set; }
     }
