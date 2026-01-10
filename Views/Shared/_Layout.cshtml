@@ -1,51 +1,125 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ClashArt</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ClashArt.styles.css" asp-append-version="true" />
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ClashArt</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - ClashArt - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    colors: {
+                        "primary": "#e506d6",
+                        "secondary": "#00f3ff",
+                        "neon-glow": "#e506d6",
+
+                        // Backgrounds
+                        "background-dark": "#121212",
+                        "nav-bg": "#121212",
+                        "surface-dark": "#1e1e1e",
+                        "card-dark": "#1e1e1e",
+                        "background-light": "#f8f5f8",
+                    },
+                    backgroundImage: {
+                        'neon-gradient': 'linear-gradient(to right, #e506d6, #00f3ff)',
+                        'grid-pattern': "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23e506d6' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E\")",
+                    },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(229, 6, 214, 0.5)',
+                        'neon-blue': '0 0 20px rgba(0, 243, 255, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #121212;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #e506d6;
+            }
+
+        /* Glassmorphism Utility (Available globally) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 10px rgba(229, 6, 214, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white font-body overflow-x-hidden selection:bg-primary selection:text-white flex flex-col min-h-screen">
+
+    <header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-white/10 bg-nav-bg/90 backdrop-blur-md px-6 py-4 lg:px-10">
+        <div class="flex items-center gap-8">
+            <div class="flex items-center gap-3 text-white">
+                <div class="flex items-center justify-center size-8 rounded bg-primary/20 text-primary">
+                    <span class="material-symbols-outlined text-2xl">swords</span>
+                    
+                </div>
+                <h2 class="text-white text-xl font-display font-bold leading-tight tracking-[-0.015em]">ClashArt</h2>
+            </div>
+            <nav class="hidden md:flex items-center gap-8">
+                <a class="text-white/80 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Arena</a>
+                <a class="text-white/80 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Leaderboard</a>
+                <a class="text-white/80 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Marketplace</a>
+            </nav>
+        </div>
+        <div class="flex flex-1 justify-end gap-6">
+            <div class="hidden sm:flex w-full max-w-xs items-center rounded-full bg-white/5 border border-white/10 px-3 py-2 focus-within:border-primary/50 focus-within:bg-white/10 transition-all">
+                <span class="material-symbols-outlined text-white/50 text-xl">search</span>
+                <input class="w-full bg-transparent border-none px-2 py-0 text-sm text-white placeholder-white/50 focus:ring-0 outline-none" placeholder="Search..." />
+            </div>
+            <div class="flex gap-3">
+                <button class="flex items-center justify-center rounded-lg h-10 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-colors">Login</button>
+                <button class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-neon transition-all">Join Now</button>
+            </div>
+        </div>
+    </header>
+
+    <main role="main" class="flex-grow w-full">
+        @RenderBody()
+    </main>
+
+    <footer class="border-t border-white/10 bg-black/40 py-8 px-6 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+            <p>© 2026 ClashArt. The Arena Awaits.</p>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-white transition-colors">Terms</a>
+                <a href="#" class="hover:text-white transition-colors">Privacy</a>
+            </div>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
