@@ -1,0 +1,122 @@
+﻿@model ClashArt.Models.Post
+
+@{
+    ViewData["Title"] = "Submit Entry";
+}
+
+<div class="flex-1 flex flex-col items-center justify-center py-24 px-4 sm:px-6 lg:px-8 relative min-h-screen">
+    <div class="absolute top-20 left-1/4 h-96 w-96 rounded-full bg-primary/10 blur-[100px] pointer-events-none"></div>
+    <div class="absolute bottom-20 right-1/4 h-80 w-80 rounded-full bg-secondary/10 blur-[100px] pointer-events-none"></div>
+
+    <div class="w-full max-w-2xl relative z-10">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-black tracking-tighter text-white mb-2">Submit Entry</h1>
+            <p class="text-gray-400">Upload your creation and prepare for battle.</p>
+        </div>
+
+        <form asp-action="Create" enctype="multipart/form-data" class="space-y-8">
+            <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm font-bold text-center bg-red-900/20 p-2 rounded"></div>
+
+            <div class="space-y-3">
+                <label class="flex items-center gap-2 text-sm font-bold text-primary uppercase tracking-widest">
+                    <span class="flex items-center justify-center w-5 h-5 rounded-full bg-primary text-[#121212] text-xs">1</span>
+                    Select Battle Theme
+                </label>
+                <div class="relative group">
+                    <div class="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-primary to-purple-600 opacity-30 blur transition duration-200 group-hover:opacity-70"></div>
+                    <select asp-for="CompetitionThemeId" class="relative block w-full rounded-lg border-0 bg-[#1e1e1e] py-4 pl-4 pr-10 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-primary focus:ring-inset sm:text-lg font-bold shadow-xl" asp-items="ViewBag.CompetitionThemeId">
+                    </select>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <label class="flex items-center gap-2 text-sm font-bold text-primary uppercase tracking-widest">
+                    <span class="flex items-center justify-center w-5 h-5 rounded-full bg-primary text-[#121212] text-xs">2</span>
+                    Main Artwork
+                </label>
+
+                <div class="relative group cursor-pointer">
+                    <div class="absolute inset-0 bg-primary/5 rounded-2xl"></div>
+                    <label for="imageUpload" class="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-primary/50 px-6 py-16 text-center transition-all duration-300 hover:border-primary hover:bg-primary/10 hover:shadow-neon-pink cursor-pointer">
+                        <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#121212] border border-primary/30 text-primary shadow-lg group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-3xl">cloud_upload</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white group-hover:text-primary transition-colors">Click to Upload Image</h3>
+                        <p class="mt-1 text-sm text-gray-400">PNG, JPG up to 10MB</p>
+
+                        <img id="imagePreview" class="mt-4 max-h-64 rounded-lg hidden border border-white/20 shadow-xl" />
+                    </label>
+                    <input type="file" id="imageUpload" name="imageFile" class="hidden" accept="image/*" onchange="previewFile(this, 'imagePreview')" />
+                </div>
+                <span asp-validation-for="ImageUrl" class="text-red-500 text-xs font-bold block mt-1"></span>
+            </div>
+
+            <div class="space-y-3">
+                <label class="flex items-center gap-2 text-sm font-bold text-secondary uppercase tracking-widest">
+                    <span class="flex items-center justify-center w-5 h-5 rounded-full bg-secondary text-[#121212] text-xs">3</span>
+                    Proof of Work (Timelapse)
+                </label>
+
+                <div class="relative group cursor-pointer w-full sm:w-3/4">
+                    <label for="videoUpload" class="relative flex items-center gap-6 rounded-xl border border-secondary/30 bg-[#1e1e1e]/40 px-6 py-6 transition-all duration-300 hover:border-secondary hover:bg-secondary/5 hover:shadow-neon-blue cursor-pointer">
+                        <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-secondary/10 text-secondary border border-secondary/20 group-hover:bg-secondary group-hover:text-black transition-colors">
+                            <span class="material-symbols-outlined text-2xl">videocam</span>
+                        </div>
+                        <div class="text-left flex-1">
+                            <h3 class="text-sm font-bold text-white group-hover:text-secondary transition-colors" id="videoLabel">Upload Video</h3>
+                            <p class="text-xs text-gray-400">MP4, MOV (Max 50MB)</p>
+                        </div>
+                        <div class="ml-auto">
+                            <span class="material-symbols-outlined text-gray-500 group-hover:text-secondary">add_circle</span>
+                        </div>
+                    </label>
+                    <input type="file" id="videoUpload" name="videoFile" class="hidden" accept="video/*" onchange="updateFileName(this, 'videoLabel')" />
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <label class="flex items-center gap-2 text-sm font-bold text-gray-300 uppercase tracking-widest">
+                    <span class="flex items-center justify-center w-5 h-5 rounded-full bg-gray-600 text-white text-xs">4</span>
+                    Artist Manifesto
+                </label>
+                <div class="glass-panel rounded-xl p-1 focus-within:ring-1 focus-within:ring-white/30 transition-all bg-[#1e1e1e]/40 border border-white/10">
+                    <textarea asp-for="Description" class="block w-full rounded-lg border-0 bg-transparent py-3 px-4 text-white placeholder:text-gray-500 focus:ring-0 sm:text-sm resize-none" placeholder="Tell the story behind your creation..." rows="4"></textarea>
+                </div>
+                <span asp-validation-for="Description" class="text-red-500 text-xs font-bold"></span>
+            </div>
+
+            <div class="pt-6">
+                <button type="submit" class="group relative w-full overflow-hidden rounded-lg bg-primary py-6 text-xl font-black uppercase tracking-widest text-white shadow-neon-pink transition-all hover:scale-[1.01] hover:shadow-neon-pink-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[#121212]">
+                    <span class="relative z-10 flex items-center justify-center gap-3">
+                        Enter Arena
+                        <span class="material-symbols-outlined text-2xl group-hover:animate-ping">swords</span>
+                    </span>
+                    <div class="absolute inset-0 -z-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 opacity-0 transition-opacity duration-700 group-hover:animate-shine group-hover:opacity-100"></div>
+                </button>
+                <p class="mt-4 text-center text-xs text-gray-500">By entering the arena, you agree to the Combat Rules.</p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function previewFile(input, previewId) {
+        var preview = document.getElementById(previewId);
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function updateFileName(input, labelId) {
+        var label = document.getElementById(labelId);
+        if (input.files && input.files[0]) {
+            label.innerText = "Selected: " + input.files[0].name;
+            label.classList.add("text-secondary");
+        }
+    }
+</script>
