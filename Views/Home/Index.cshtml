@@ -1,11 +1,18 @@
-﻿@model ClashArt.Models.HomeViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@using ClashArt.Models
+
+@model ClashArt.Models.HomeViewModel
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "The Arena";
+    var currentUser = await UserManager.GetUserAsync(User);
+    var currentUserId = currentUser?.Id;
 
-    // Date inițiale calculate pe server
+    // Calculăm datele pentru Progress Bar și Timer doar dacă avem o temă activă
     double progressPercentage = 0;
     long remainingSeconds = 0;
+    TimeSpan remainingTime = TimeSpan.Zero;
 
     if (Model.ActiveTheme != null)
     {
@@ -15,6 +22,7 @@
         if (totalDuration > 0)
         {
             progressPercentage = (elapsed / totalDuration) * 100;
+            // Cap to 100%
             if (progressPercentage > 100) progressPercentage = 100;
         }
 
@@ -22,6 +30,7 @@
         if (timeSpan.TotalSeconds > 0)
         {
             remainingSeconds = (long)timeSpan.TotalSeconds;
+            remainingTime = timeSpan;
         }
     }
 }
@@ -50,11 +59,13 @@
             column-count: 2;
         }
     }
+
     @@media (min-width: 1024px) {
         .masonry-grid {
             column-count: 3;
         }
     }
+
     @@media (min-width: 1280px) {
         .masonry-grid {
             column-count: 4;
@@ -102,20 +113,25 @@
 
                 <div class="flex flex-col items-center gap-4 rounded-xl border border-white/10 bg-black/40 p-6 backdrop-blur-sm">
                     <p class="text-xs font-bold uppercase tracking-widest text-text-subtle">Time Remaining</p>
-
                     <div class="flex gap-4" id="countdown-timer" data-seconds="@remainingSeconds">
                         <div class="flex flex-col items-center gap-1">
-                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="days">00</div>
+                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="days">
+                                @(remainingTime.Days.ToString("00"))
+                            </div>
                             <span class="text-[10px] uppercase text-text-subtle">Days</span>
                         </div>
                         <span class="mt-2 text-2xl font-bold text-primary">:</span>
                         <div class="flex flex-col items-center gap-1">
-                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="hours">00</div>
+                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="hours">
+                                @(remainingTime.Hours.ToString("00"))
+                            </div>
                             <span class="text-[10px] uppercase text-text-subtle">Hours</span>
                         </div>
                         <span class="mt-2 text-2xl font-bold text-primary">:</span>
                         <div class="flex flex-col items-center gap-1">
-                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="minutes">00</div>
+                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="minutes">
+                                @(remainingTime.Minutes.ToString("00"))
+                            </div>
                             <span class="text-[10px] uppercase text-text-subtle">Mins</span>
                         </div>
                     </div>
@@ -146,72 +162,88 @@
         </div>
     </div>
 
-    @using Microsoft.AspNetCore.Identity
-@inject UserManager<ApplicationUser> UserManager
-
-<div class="masonry-grid w-full">
-    @foreach (var post in Model.Posts)
-    {
-        
-            var currentUserId = UserManager.GetUserId(User);
+    <div class="masonry-grid w-full">
+        @foreach (var post in Model.Posts)
+        {
+            // LOGICA C# pentru Fiecare Postare
             bool isLikedByMe = post.Likes != null && post.Likes.Any(l => l.UserId == currentUserId);
             int likeCount = post.Likes?.Count ?? 0;
-        
+            bool isOwner = currentUserId != null && post.UserId == currentUserId;
 
-        <article class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark shadow-lg transition-transform hover:-translate-y-1">
-            <div class="relative">
-                <img src="@post.ImageUrl" alt="Art" class="h-auto w-full object-cover transition duration-500 group-hover:scale-105" />
+            <article class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark shadow-lg transition-transform hover:-translate-y-1">
 
-                @if (post.Theme != null && post.Theme.Title != "Freestyle Gallery")
-                {
-                    <div class="absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-xs font-bold text-primary backdrop-blur-md border border-primary/30">
-                        @post.Theme.Title
-                    </div>
-                }
+                <div class="relative overflow-hidden">
+                    <img src="@post.ImageUrl" alt="Art" class="h-auto w-full object-cover transition duration-500 group-hover:scale-105" />
 
-                <div class="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-black/90 to-transparent"></div>
-            </div>
-
-            <div class="p-4 pt-2">
-                <div class="flex items-start justify-between">
-                    <h3 class="line-clamp-2 text-sm font-bold text-white leading-snug">
-                        @post.Description
-                    </h3>
-                </div>
-
-                <div class="mt-4 flex items-center justify-between">
-                    <a asp-controller="Users" asp-action="Profile" asp-route-id="@post.UserId" class="flex items-center gap-2 no-underline hover:opacity-80 transition-opacity">
-                        <div class="size-8 rounded-full bg-gray-700 bg-cover bg-center ring-2 ring-black"
-                             style="background-image: url('@(string.IsNullOrEmpty(post.User?.AvatarUrl) ? "https://i.pravatar.cc/150" : post.User.AvatarUrl)')">
+                    @if (post.Theme != null && post.Theme.Title != "Freestyle Gallery")
+                    {
+                        <div class="absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-xs font-bold text-primary backdrop-blur-md border border-primary/30 z-10">
+                            @post.Theme.Title
                         </div>
-                        <span class="text-sm font-medium text-gray-300">
-                            @(post.User?.DisplayName ?? "Unknown")
-                        </span>
-                    </a>
+                    }
 
-                    <form asp-controller="Home" asp-action="ToggleLike" method="post" class="relative z-10">
-                        <input type="hidden" name="postId" value="@post.Id" />
-                        
-                        <button type="submit" 
-                                class="flex items-center gap-1.5 rounded-full bg-[#121212] border px-3 py-1.5 transition group/btn 
-                                @(isLikedByMe ? "border-primary/50 bg-primary/10" : "border-white/10 hover:bg-white/5 hover:border-primary/30")">
-                            
-                            <span class="material-symbols-outlined text-[18px] transition-colors duration-300 
-                                  @(isLikedByMe ? "text-primary scale-110" : "text-gray-400 group-hover/btn:text-primary")">
-                                @(isLikedByMe ? "favorite" : "favorite_border")
-                            </span>
-                            
-                            <span class="text-xs font-bold transition-colors 
-                                  @(isLikedByMe ? "text-primary" : "text-gray-400 group-hover/btn:text-white")">
-                                @likeCount
-                            </span>
-                        </button>
-                    </form>
+                    <div class="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
                 </div>
-            </div>
-        </article>
-    }
-</div>
+
+                <div class="p-4 pt-2">
+                    <div class="flex items-start justify-between">
+                        <h3 class="line-clamp-2 text-sm font-bold text-white leading-snug">
+                            @post.Description
+                        </h3>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between">
+
+                        <a asp-controller="Users" asp-action="Profile" asp-route-id="@post.UserId" class="flex items-center gap-2 no-underline hover:opacity-80 transition-opacity">
+                            <div class="size-8 rounded-full bg-gray-700 bg-cover bg-center ring-2 ring-black"
+                                 style="background-image: url('@(string.IsNullOrEmpty(post.User?.AvatarUrl) ? "https://i.pravatar.cc/150" : post.User.AvatarUrl)')">
+                            </div>
+                            <span class="text-sm font-medium text-gray-300">
+                                @(post.User?.DisplayName ?? "Unknown")
+                            </span>
+                        </a>
+
+                        <div class="flex items-center gap-2">
+
+                            @if (isOwner)
+                            {
+                                <a asp-controller="Posts" asp-action="Edit" asp-route-id="@post.Id"
+                                   class="flex items-center justify-center size-8 rounded-full bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition" title="Edit">
+                                    <span class="material-symbols-outlined text-[16px]">edit</span>
+                                </a>
+
+                                <form asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id" method="post"
+                                      onsubmit="return confirm('Sigur vrei să ștergi această lucrare?');">
+                                    <button type="submit" class="flex items-center justify-center size-8 rounded-full bg-gray-800 text-red-500 hover:bg-red-900/30 transition" title="Delete">
+                                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                                    </button>
+                                </form>
+                            }
+
+                            <form asp-controller="Home" asp-action="ToggleLike" method="post">
+                                <input type="hidden" name="postId" value="@post.Id" />
+
+                                <button type="submit"
+                                        class="flex items-center gap-1.5 rounded-full bg-[#121212] border px-3 py-1.5 transition group/btn
+                                            @(isLikedByMe ? "border-primary/50 bg-primary/10" : "border-white/10 hover:bg-white/5 hover:border-primary/30")">
+
+                                    <span class="material-symbols-outlined text-[18px] transition-colors duration-300
+                                              @(isLikedByMe ? "text-primary scale-110" : "text-gray-400 group-hover/btn:text-primary")">
+                                        @(isLikedByMe ? "favorite" : "favorite_border")
+                                    </span>
+
+                                    <span class="text-xs font-bold transition-colors
+                                              @(isLikedByMe ? "text-primary" : "text-gray-400 group-hover/btn:text-white")">
+                                        @likeCount
+                                    </span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
 </div>
 
 <div class="fixed bottom-8 right-8 z-40">
@@ -226,14 +258,10 @@
         const timerElement = document.getElementById("countdown-timer");
         if (!timerElement) return;
 
-        // Luăm timpul total rămas (în secunde) din atributul data-seconds generat de C#
         let totalSeconds = parseInt(timerElement.getAttribute("data-seconds"));
 
         function updateTimer() {
-            if (totalSeconds <= 0) {
-                // Opțional: Reîncarcă pagina când expiră timpul
-                return;
-            }
+            if (totalSeconds <= 0) return;
 
             totalSeconds--;
 
@@ -241,14 +269,15 @@
             const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
             const minutes = Math.floor((totalSeconds % 3600) / 60);
 
-            // Actualizăm textul în elementele HTML
-            document.getElementById("days").innerText = String(days).padStart(2, '0');
-            document.getElementById("hours").innerText = String(hours).padStart(2, '0');
-            document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
+            const elDays = document.getElementById("days");
+            const elHours = document.getElementById("hours");
+            const elMins = document.getElementById("minutes");
+
+            if(elDays) elDays.innerText = String(days).padStart(2, '0');
+            if(elHours) elHours.innerText = String(hours).padStart(2, '0');
+            if(elMins) elMins.innerText = String(minutes).padStart(2, '0');
         }
 
-        // Pornim intervalul să ruleze la fiecare secundă
         setInterval(updateTimer, 1000);
-        updateTimer(); // Rulăm o dată imediat ca să nu așteptăm 1s
     });
 </script>
