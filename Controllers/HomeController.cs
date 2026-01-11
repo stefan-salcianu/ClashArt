@@ -54,13 +54,15 @@ namespace ClashArt.Controllers
         {
             var currentUserId = _userManager.GetUserId(User);
 
+            bool isAdmin = User.IsInRole("Admin");
+
             var postsQuery = _context.Posts
                 .Include(p => p.User)
                 .Include(p => p.Theme)
                 .Include(p => p.Likes)
                 .AsQueryable();
 
-            ViewData["CurrentSort"] = sortOrder; 
+            ViewData["CurrentSort"] = sortOrder;
 
             switch (sortOrder)
             {
@@ -72,6 +74,8 @@ namespace ClashArt.Controllers
                             .Select(f => f.FollowedId);
 
                         postsQuery = postsQuery.Where(p => followingIds.Contains(p.UserId));
+
+                        postsQuery = postsQuery.OrderByDescending(p => p.CreatedAt);
                     }
                     else
                     {
@@ -80,19 +84,23 @@ namespace ClashArt.Controllers
                     break;
 
                 case "trending":
-                    postsQuery = postsQuery.OrderByDescending(p => p.Likes.Count);
-                    break;
-
                 case "newest":
                 default:
-                    postsQuery = postsQuery.OrderByDescending(p => p.CreatedAt);
+                 
+                    if (!isAdmin)
+                    {
+                        postsQuery = postsQuery.Where(p => !p.User.IsPrivate);
+                    }
+
+                    if (sortOrder == "trending")
+                    {
+                        postsQuery = postsQuery.OrderByDescending(p => p.Likes.Count);
+                    }
+                    else
+                    {
+                        postsQuery = postsQuery.OrderByDescending(p => p.CreatedAt);
+                    }
                     break;
-            }
-
-
-            if (sortOrder == "following")
-            {
-                postsQuery = postsQuery.OrderByDescending(p => p.CreatedAt);
             }
 
             var feedPosts = await postsQuery.ToListAsync();

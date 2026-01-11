@@ -9,6 +9,7 @@
     var currentUser = await UserManager.GetUserAsync(User);
     var currentUserId = currentUser?.Id;
 
+    // Calculăm datele pentru Progress Bar și Timer doar dacă avem o temă activă
     double progressPercentage = 0;
     long remainingSeconds = 0;
     TimeSpan remainingTime = TimeSpan.Zero;
@@ -41,13 +42,8 @@
         border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-
-    /* --- MASONRY SETUP PENTRU JS --- */
-    /* Nu folosim grid sau columns aici, lăsăm JS-ul să calculeze pozițiile absolute */
+    /* --- MASONRY SETUP --- */
     .masonry-grid-sizer,
-
-
-
     .masonry-item {
         width: 100%; /* Mobile: 1 coloană */
     }
@@ -159,45 +155,35 @@
     }
 
     @{
-        // Citim filtrul curent ca să știm ce buton colorăm
         var currentSort = ViewData["CurrentSort"] as string ?? "newest";
     }
 
     <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div class="flex flex-wrap gap-2">
-
             <a href="@Url.Action("Index", new { sortOrder = "trending" })"
                class="flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition no-underline
-               @(currentSort == "trending"
-                                  ? "border-primary bg-primary text-white shadow-neon"
-                                  : "border-white/10 bg-[#1e1e1e] text-text-subtle hover:bg-[#2a2a2a] hover:text-white")">
+               @(currentSort == "trending" ? "border-primary bg-primary text-white shadow-neon" : "border-white/10 bg-[#1e1e1e] text-text-subtle hover:bg-[#2a2a2a] hover:text-white")">
                 <span class="material-symbols-outlined text-[18px]">local_fire_department</span> Trending
             </a>
 
             <a href="@Url.Action("Index", new { sortOrder = "newest" })"
                class="flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition no-underline
-               @(currentSort == "newest"
-                                  ? "border-primary bg-primary text-white shadow-neon"
-                                  : "border-white/10 bg-[#1e1e1e] text-text-subtle hover:bg-[#2a2a2a] hover:text-white")">
+               @(currentSort == "newest" ? "border-primary bg-primary text-white shadow-neon" : "border-white/10 bg-[#1e1e1e] text-text-subtle hover:bg-[#2a2a2a] hover:text-white")">
                 <span class="material-symbols-outlined text-[18px]">public</span> Global
             </a>
-
-        
         </div>
+
         @if (User.Identity.IsAuthenticated)
         {
             <a href="@Url.Action("Index", new { sortOrder = "following" })"
                class="flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition no-underline
-                           @(currentSort == "following"
-                                                         ? "border-primary bg-primary text-white shadow-neon"
-                                                         : "border-white/10 bg-[#1e1e1e] text-text-subtle hover:bg-[#2a2a2a] hover:text-white")">
-            <span class="material-symbols-outlined text-[18px]">group</span> Following
-        </a>
-                }
+                   @(currentSort == "following" ? "border-primary bg-primary text-white shadow-neon" : "border-white/10 bg-[#1e1e1e] text-text-subtle hover:bg-[#2a2a2a] hover:text-white")">
+                <span class="material-symbols-outlined text-[18px]">group</span> Following
+            </a>
+        }
     </div>
 
-    <div id="masonry-container" class="w-full">
-
+    <div id="masonry-container" class="w-full -ml-3">
         <div class="masonry-grid-sizer"></div>
 
         @foreach (var post in Model.Posts)
@@ -206,87 +192,76 @@
             int likeCount = post.Likes?.Count ?? 0;
             bool isOwner = currentUserId != null && post.UserId == currentUserId;
 
+            /* MODIFICARE CHEIE AICI:
+            1. .masonry-item este acum un WRAPPER care are "p-3" (padding). Asta creează spațiul.
+            2. <article> este cardul propriu-zis, care are background și border. */
+            <div class="masonry-item p-3">
+                <article class="group relative flex flex-col overflow-hidden rounded-2xl bg-[#1e1e1e] border border-white/5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-primary/10">
 
-            <article class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark shadow-lg transition-transform hover:-translate-y-1">
-                <div class="relative overflow-hidden">
-                    <img src="@post.ImageUrl" alt="Art" class="h-auto w-full object-cover transition duration-500 group-hover:scale-105" />
+                    <div class="relative w-full overflow-hidden">
+                        <img src="@post.ImageUrl" alt="Art" class="w-full h-auto object-cover transition duration-700 group-hover:scale-105" />
 
-                    @if (post.Theme != null && post.Theme.Title != "Freestyle Gallery")
-                    {
-                        <div class="absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-xs font-bold text-primary backdrop-blur-md border border-primary/30 z-10">
-                            @post.Theme.Title
-                        </div>
-                    }
-                    <div class="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
-                </div>
-
-                <div class="p-4 pt-2">
-                    <h3 class="line-clamp-2 text-sm font-bold text-white leading-snug">
-                        @post.Description
-                    </h3>
-
-                    <div class="mt-4 flex items-center justify-between">
-                        <a asp-controller="Users" asp-action="Profile" asp-route-id="@post.UserId" class="flex items-center gap-2 no-underline hover:opacity-80 transition-opacity">
-                            <div class="size-8 rounded-full bg-gray-700 bg-cover bg-center ring-2 ring-black"
-                                 style="background-image: url('@(string.IsNullOrEmpty(post.User?.AvatarUrl) ? "https://i.pravatar.cc/150" : post.User.AvatarUrl)')">
+                        @if (post.Theme != null && post.Theme.Title != "Freestyle Gallery")
+                        {
+                            <div class="absolute right-3 top-3 rounded-md bg-black/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary backdrop-blur-md border border-primary/30 z-10 shadow-lg">
+                                @post.Theme.Title
                             </div>
-                            <span class="text-sm font-medium text-gray-300">
-                                @(post.User?.DisplayName ?? "Unknown")
-                            </span>
-                        </a>
+                        }
 
-                        <div class="flex items-center gap-2">
-                            @if (currentUserId != null)
-                            {
-                                // EDIT: Doar Owner
+                        <div class="absolute bottom-0 left-0 h-32 w-full bg-gradient-to-t from-[#1e1e1e] via-[#1e1e1e]/80 to-transparent pointer-events-none opacity-90"></div>
+                    </div>
+
+                    <div class="p-5 pt-2 relative z-10 -mt-8">
+                        <h3 class="line-clamp-2 text-base font-bold text-white leading-snug mb-4 drop-shadow-md">
+                            @post.Description
+                        </h3>
+
+                        <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                            <a asp-controller="Users" asp-action="Profile" asp-route-id="@post.UserId" class="flex items-center gap-2.5 no-underline group/user">
+                                <div class="size-9 rounded-full bg-gray-700 bg-cover bg-center ring-2 ring-transparent transition-all group-hover/user:ring-primary"
+                                     style="background-image: url('@(string.IsNullOrEmpty(post.User?.AvatarUrl) ? "https://i.pravatar.cc/150" : post.User.AvatarUrl)')">
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold text-gray-200 group-hover/user:text-primary transition-colors">
+                                        @(post.User?.DisplayName ?? "Unknown")
+                                    </span>
+                                    <span class="text-[10px] text-gray-500">Artist</span>
+                                </div>
+                            </a>
+
+                            <div class="flex items-center gap-2">
                                 @if (isOwner)
                                 {
                                     <a asp-controller="Posts" asp-action="Edit" asp-route-id="@post.Id"
-                                       asp-route-returnUrl="/Home/Index"
-                                       class="flex items-center justify-center size-8 rounded-full bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition" title="Edit">
+                                       class="flex items-center justify-center size-8 rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition" title="Edit">
                                         <span class="material-symbols-outlined text-[16px]">edit</span>
                                     </a>
-                                }
 
-                                // DELETE: Admin SAU Owner
-                                @if (isOwner || User.IsInRole("Admin"))
-                                {
-                                    <form asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id"
-                                          asp-route-returnUrl="/Home/Index"
-                                          method="post"
+                                    <form asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id" method="post"
                                           onsubmit="return confirm('Sigur vrei să ștergi această lucrare?');">
-                                        <button type="submit" class="flex items-center justify-center size-8 rounded-full bg-gray-800 text-red-500 hover:bg-red-900/30 transition" title="Delete">
+                                        <button type="submit" class="flex items-center justify-center size-8 rounded-full bg-white/5 text-red-400 hover:bg-red-500/20 transition" title="Delete">
                                             <span class="material-symbols-outlined text-[16px]">delete</span>
                                         </button>
                                     </form>
                                 }
 
-
                                 <form asp-controller="Home" asp-action="ToggleLike" method="post">
                                     <input type="hidden" name="postId" value="@post.Id" />
-
                                     <button type="submit"
-                                            class="flex items-center gap-1.5 rounded-full bg-[#121212] border px-3 py-1.5 transition group/btn
-                                                @(isLikedByMe ? "border-primary/50 bg-primary/10" : "border-white/10 hover:bg-white/5 hover:border-primary/30")">
+                                            class="flex items-center gap-1.5 rounded-full border px-3 py-1.5 transition-all
+                                                @(isLikedByMe ? "border-primary/50 bg-primary/10 text-primary shadow-[0_0_10px_rgba(229,6,214,0.2)]" : "border-white/10 bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white")">
 
-                                        <span class="material-symbols-outlined text-[18px] transition-colors duration-300
-                                                  @(isLikedByMe ? "text-primary scale-110" : "text-gray-400 group-hover/btn:text-primary")">
+                                        <span class="material-symbols-outlined text-[18px] transition-transform active:scale-90 @(isLikedByMe ? "fill-current" : "")">
                                             @(isLikedByMe ? "favorite" : "favorite_border")
                                         </span>
-
-                                        <span class="text-xs font-bold transition-colors
-                                                  @(isLikedByMe ? "text-primary" : "text-gray-400 group-hover/btn:text-white")">
-                                            @likeCount
-                                        </span>
+                                        <span class="text-xs font-bold">@likeCount</span>
                                     </button>
                                 </form>
-
-                            }
-
-                            
+                            </div>
                         </div>
                     </div>
                 </article>
+            </div>
         }
     </div>
 </div>
@@ -303,7 +278,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-
         // --- TIMER LOGIC ---
         const timerElement = document.getElementById("countdown-timer");
         if (timerElement) {

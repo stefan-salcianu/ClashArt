@@ -48,7 +48,7 @@
 </head>
 
 <body class="bg-background-light dark:bg-background-dark font-display text-white overflow-x-hidden min-h-screen flex flex-col">
-
+   
     <main class="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
 
         <div class="w-full rounded-2xl overflow-hidden relative min-h-[300px] md:min-h-[380px] shadow-2xl border border-white/5 group">
@@ -68,6 +68,7 @@
                     <div class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-[#121212] relative z-10 overflow-hidden bg-[#2a2a2a] shadow-[0_0_20px_rgba(229,6,214,0.3)]">
                         <img src="@(Model.AvatarUrl ?? "https://placehold.co/400")" class="w-full h-full object-cover" alt="@Model.DisplayName Avatar" />
                     </div>
+                 
                     <div class="absolute -bottom-2 -right-2 md:right-0 z-20 bg-[#121212] rounded-full p-1">
                         <div class="bg-gradient-to-tr from-primary to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20 shadow-lg">
                             LVL @Model.Level
@@ -77,12 +78,26 @@
 
                 <div class="flex-1 flex flex-col gap-2 pb-2">
                     <div class="flex flex-col md:flex-row md:items-center gap-3">
+
                         <h1 class="text-3xl md:text-4xl font-bold text-white tracking-tight">@Model.DisplayName</h1>
-                        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary shadow-[0_0_10px_rgba(229,6,214,0.15)] w-fit">
-                            <span class="material-symbols-outlined text-sm">verified</span>
-                            <span class="text-xs font-bold uppercase tracking-wider">Art Warlord</span>
+
+                        <div class="flex flex-wrap items-center gap-3">
+
+                            <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary shadow-[0_0_10px_rgba(229,6,214,0.15)] w-fit">
+                                <span class="material-symbols-outlined text-sm">verified</span>
+                                <span class="text-xs font-bold uppercase tracking-wider">Art Warlord</span>
+                            </div>
+
+                            @if (Model.IsPrivate && User.IsInRole("Admin") && !Model.IsCurrentUser)
+                            {
+                                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full border border-red-500/40 bg-red-500/10 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.15)] w-fit transition hover:bg-red-500/20" title="Vezi acest profil deoarece ești Admin">
+                                    <span class="material-symbols-outlined text-[16px]">lock_open</span> <span class="text-[10px] font-bold uppercase tracking-wider">Admin View</span>
+                                </div>
+                            }
+
                         </div>
                     </div>
+
                     <p class="text-gray-400 max-w-2xl text-base font-light">
                         @(Model.Bio ?? "Acest artist este un mister. Încă nu și-a scris povestea.")
                     </p>

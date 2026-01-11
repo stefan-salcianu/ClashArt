@@ -63,8 +63,10 @@ namespace ClashArt.Controllers
             var followersCount = await _context.Follows.CountAsync(f => f.FollowedId == targetUser.Id && f.IsAccepted);
             var followingCount = await _context.Follows.CountAsync(f => f.FollowerId == targetUser.Id && f.IsAccepted);
 
-            
-            bool hasAccess = isMe || !targetUser.IsPrivate || isFollowing;
+
+            bool isAdmin = User.IsInRole("Admin");
+
+            bool hasAccess = isMe || !targetUser.IsPrivate || isFollowing || isAdmin;
 
             var userPosts = await _context.Posts
                 .Include(p => p.Likes)
