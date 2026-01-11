@@ -43,33 +43,38 @@
         border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    /* Masonry Layout corect */
-    .masonry-grid {
-        column-count: 1;
-        column-gap: 1.5rem;
-    }
-
+    /* --- MASONRY SETUP PENTRU JS --- */
+    /* Nu folosim grid sau columns aici, lăsăm JS-ul să calculeze pozițiile absolute */
+    .masonry-grid-sizer,
     .masonry-item {
-        break-inside: avoid;
-        margin-bottom: 1.5rem;
+        width: 100%; /* Mobile: 1 coloană */
     }
 
     @@media (min-width: 640px) {
-        .masonry-grid {
-            column-count: 2;
-        }
+        .masonry-grid-sizer, .masonry-item
+
+    {
+        width: 50%; /* Tabletă: 2 coloane */
+    }
+
     }
 
     @@media (min-width: 1024px) {
-        .masonry-grid {
-            column-count: 3;
-        }
+        .masonry-grid-sizer, .masonry-item
+
+    {
+        width: 33.333%; /* Desktop: 3 coloane */
+    }
+
     }
 
     @@media (min-width: 1280px) {
-        .masonry-grid {
-            column-count: 4;
-        }
+        .masonry-grid-sizer, .masonry-item
+
+    {
+        width: 25%; /* Ecran mare: 4 coloane */
+    }
+
     }
 </style>
 
@@ -151,18 +156,48 @@
         </section>
     }
 
+    @{
+        // Citim filtrul curent ca să știm ce buton colorăm
+        var currentSort = ViewData["CurrentSort"] as string ?? "newest";
+    }
+
     <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div class="flex flex-wrap gap-2">
-            <button class="flex items-center gap-2 rounded-full border border-primary bg-primary/20 px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white">
+
+            <a href="@Url.Action("Index", new { sortOrder = "trending" })"
+               class="flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition no-underline
+               @(currentSort == "trending"
+                                  ? "border-primary bg-primary text-white shadow-neon"
+                                  : "border-white/10 bg-[#1e1e1e] text-text-subtle hover:bg-[#2a2a2a] hover:text-white")">
                 <span class="material-symbols-outlined text-[18px]">local_fire_department</span> Trending
-            </button>
-            <button class="flex items-center gap-2 rounded-full border border-white/10 bg-[#1e1e1e] px-4 py-2 text-sm font-medium text-text-subtle transition hover:bg-[#2a2a2a] hover:text-white">
-                <span class="material-symbols-outlined text-[18px]">new_releases</span> Newest
-            </button>
+            </a>
+
+            <a href="@Url.Action("Index", new { sortOrder = "newest" })"
+               class="flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition no-underline
+               @(currentSort == "newest"
+                                  ? "border-primary bg-primary text-white shadow-neon"
+                                  : "border-white/10 bg-[#1e1e1e] text-text-subtle hover:bg-[#2a2a2a] hover:text-white")">
+                <span class="material-symbols-outlined text-[18px]">public</span> Global
+            </a>
+
+        
         </div>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a href="@Url.Action("Index", new { sortOrder = "following" })"
+               class="flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition no-underline
+                           @(currentSort == "following"
+                                                         ? "border-primary bg-primary text-white shadow-neon"
+                                                         : "border-white/10 bg-[#1e1e1e] text-text-subtle hover:bg-[#2a2a2a] hover:text-white")">
+            <span class="material-symbols-outlined text-[18px]">group</span> Following
+        </a>
+                }
     </div>
 
-    <div class="masonry-grid w-full">
+    <div id="masonry-container" class="w-full">
+
+        <div class="masonry-grid-sizer"></div>
+
         @foreach (var post in Model.Posts)
         {
             // LOGICA C# pentru Fiecare Postare
@@ -170,78 +205,80 @@
             int likeCount = post.Likes?.Count ?? 0;
             bool isOwner = currentUserId != null && post.UserId == currentUserId;
 
-            <article class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark shadow-lg transition-transform hover:-translate-y-1">
+            <div class="masonry-item p-3">
+                <article class="group relative overflow-hidden rounded-xl bg-card-dark shadow-lg transition-transform hover:-translate-y-1">
 
-                <div class="relative overflow-hidden">
-                    <img src="@post.ImageUrl" alt="Art" class="h-auto w-full object-cover transition duration-500 group-hover:scale-105" />
+                    <div class="relative overflow-hidden">
+                        <img src="@post.ImageUrl" alt="Art" class="h-auto w-full object-cover transition duration-500 group-hover:scale-105" />
 
-                    @if (post.Theme != null && post.Theme.Title != "Freestyle Gallery")
-                    {
-                        <div class="absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-xs font-bold text-primary backdrop-blur-md border border-primary/30 z-10">
-                            @post.Theme.Title
-                        </div>
-                    }
+                        @if (post.Theme != null && post.Theme.Title != "Freestyle Gallery")
+                        {
+                            <div class="absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-xs font-bold text-primary backdrop-blur-md border border-primary/30 z-10">
+                                @post.Theme.Title
+                            </div>
+                        }
 
-                    <div class="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
-                </div>
-
-                <div class="p-4 pt-2">
-                    <div class="flex items-start justify-between">
-                        <h3 class="line-clamp-2 text-sm font-bold text-white leading-snug">
-                            @post.Description
-                        </h3>
+                        <div class="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
                     </div>
 
-                    <div class="mt-4 flex items-center justify-between">
+                    <div class="p-4 pt-2">
+                        <div class="flex items-start justify-between">
+                            <h3 class="line-clamp-2 text-sm font-bold text-white leading-snug">
+                                @post.Description
+                            </h3>
+                        </div>
 
-                        <a asp-controller="Users" asp-action="Profile" asp-route-id="@post.UserId" class="flex items-center gap-2 no-underline hover:opacity-80 transition-opacity">
-                            <div class="size-8 rounded-full bg-gray-700 bg-cover bg-center ring-2 ring-black"
-                                 style="background-image: url('@(string.IsNullOrEmpty(post.User?.AvatarUrl) ? "https://i.pravatar.cc/150" : post.User.AvatarUrl)')">
-                            </div>
-                            <span class="text-sm font-medium text-gray-300">
-                                @(post.User?.DisplayName ?? "Unknown")
-                            </span>
-                        </a>
+                        <div class="mt-4 flex items-center justify-between">
 
-                        <div class="flex items-center gap-2">
+                            <a asp-controller="Users" asp-action="Profile" asp-route-id="@post.UserId" class="flex items-center gap-2 no-underline hover:opacity-80 transition-opacity">
+                                <div class="size-8 rounded-full bg-gray-700 bg-cover bg-center ring-2 ring-black"
+                                     style="background-image: url('@(string.IsNullOrEmpty(post.User?.AvatarUrl) ? "https://i.pravatar.cc/150" : post.User.AvatarUrl)')">
+                                </div>
+                                <span class="text-sm font-medium text-gray-300">
+                                    @(post.User?.DisplayName ?? "Unknown")
+                                </span>
+                            </a>
 
-                            @if (isOwner)
-                            {
-                                <a asp-controller="Posts" asp-action="Edit" asp-route-id="@post.Id"
-                                   class="flex items-center justify-center size-8 rounded-full bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition" title="Edit">
-                                    <span class="material-symbols-outlined text-[16px]">edit</span>
-                                </a>
+                            <div class="flex items-center gap-2">
 
-                                <form asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id" method="post"
-                                      onsubmit="return confirm('Sigur vrei să ștergi această lucrare?');">
-                                    <button type="submit" class="flex items-center justify-center size-8 rounded-full bg-gray-800 text-red-500 hover:bg-red-900/30 transition" title="Delete">
-                                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                                @if (isOwner)
+                                {
+                                    <a asp-controller="Posts" asp-action="Edit" asp-route-id="@post.Id"
+                                       class="flex items-center justify-center size-8 rounded-full bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition" title="Edit">
+                                        <span class="material-symbols-outlined text-[16px]">edit</span>
+                                    </a>
+
+                                    <form asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id" method="post"
+                                          onsubmit="return confirm('Sigur vrei să ștergi această lucrare?');">
+                                        <button type="submit" class="flex items-center justify-center size-8 rounded-full bg-gray-800 text-red-500 hover:bg-red-900/30 transition" title="Delete">
+                                            <span class="material-symbols-outlined text-[16px]">delete</span>
+                                        </button>
+                                    </form>
+                                }
+
+                                <form asp-controller="Home" asp-action="ToggleLike" method="post">
+                                    <input type="hidden" name="postId" value="@post.Id" />
+
+                                    <button type="submit"
+                                            class="flex items-center gap-1.5 rounded-full bg-[#121212] border px-3 py-1.5 transition group/btn
+                                                @(isLikedByMe ? "border-primary/50 bg-primary/10" : "border-white/10 hover:bg-white/5 hover:border-primary/30")">
+
+                                        <span class="material-symbols-outlined text-[18px] transition-colors duration-300
+                                                  @(isLikedByMe ? "text-primary scale-110" : "text-gray-400 group-hover/btn:text-primary")">
+                                            @(isLikedByMe ? "favorite" : "favorite_border")
+                                        </span>
+
+                                        <span class="text-xs font-bold transition-colors
+                                                  @(isLikedByMe ? "text-primary" : "text-gray-400 group-hover/btn:text-white")">
+                                            @likeCount
+                                        </span>
                                     </button>
                                 </form>
-                            }
-
-                            <form asp-controller="Home" asp-action="ToggleLike" method="post">
-                                <input type="hidden" name="postId" value="@post.Id" />
-
-                                <button type="submit"
-                                        class="flex items-center gap-1.5 rounded-full bg-[#121212] border px-3 py-1.5 transition group/btn
-                                            @(isLikedByMe ? "border-primary/50 bg-primary/10" : "border-white/10 hover:bg-white/5 hover:border-primary/30")">
-
-                                    <span class="material-symbols-outlined text-[18px] transition-colors duration-300
-                                              @(isLikedByMe ? "text-primary scale-110" : "text-gray-400 group-hover/btn:text-primary")">
-                                        @(isLikedByMe ? "favorite" : "favorite_border")
-                                    </span>
-
-                                    <span class="text-xs font-bold transition-colors
-                                              @(isLikedByMe ? "text-primary" : "text-gray-400 group-hover/btn:text-white")">
-                                        @likeCount
-                                    </span>
-                                </button>
-                            </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </article>
+                </article>
+            </div>
         }
     </div>
 </div>
@@ -253,31 +290,45 @@
     </a>
 </div>
 
+<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+
+        // --- TIMER LOGIC ---
         const timerElement = document.getElementById("countdown-timer");
-        if (!timerElement) return;
+        if (timerElement) {
+            let totalSeconds = parseInt(timerElement.getAttribute("data-seconds"));
+            function updateTimer() {
+                if (totalSeconds <= 0) return;
+                totalSeconds--;
+                const days = Math.floor(totalSeconds / (3600 * 24));
+                const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
 
-        let totalSeconds = parseInt(timerElement.getAttribute("data-seconds"));
+                const elDays = document.getElementById("days");
+                const elHours = document.getElementById("hours");
+                const elMins = document.getElementById("minutes");
 
-        function updateTimer() {
-            if (totalSeconds <= 0) return;
-
-            totalSeconds--;
-
-            const days = Math.floor(totalSeconds / (3600 * 24));
-            const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-
-            const elDays = document.getElementById("days");
-            const elHours = document.getElementById("hours");
-            const elMins = document.getElementById("minutes");
-
-            if(elDays) elDays.innerText = String(days).padStart(2, '0');
-            if(elHours) elHours.innerText = String(hours).padStart(2, '0');
-            if(elMins) elMins.innerText = String(minutes).padStart(2, '0');
+                if(elDays) elDays.innerText = String(days).padStart(2, '0');
+                if(elHours) elHours.innerText = String(hours).padStart(2, '0');
+                if(elMins) elMins.innerText = String(minutes).padStart(2, '0');
+            }
+            setInterval(updateTimer, 1000);
         }
 
-        setInterval(updateTimer, 1000);
+        // --- MASONRY LOGIC ---
+        var grid = document.querySelector('#masonry-container');
+        if(grid) {
+            imagesLoaded( grid, function() {
+                new Masonry( grid, {
+                    itemSelector: '.masonry-item',
+                    columnWidth: '.masonry-grid-sizer',
+                    percentPosition: true
+                });
+                grid.style.opacity = 1;
+            });
+        }
     });
 </script>

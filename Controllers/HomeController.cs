@@ -50,25 +50,59 @@ namespace ClashArt.Controllers
             return Redirect(string.IsNullOrEmpty(referer) ? "/" : referer);
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder = "newest")
         {
-        
-            var feedPosts = await _context.Posts
+            var currentUserId = _userManager.GetUserId(User);
+
+            var postsQuery = _context.Posts
                 .Include(p => p.User)
                 .Include(p => p.Theme)
-                .Include(p => p.Likes) 
-                .OrderByDescending(p => p.CreatedAt)
-                .ToListAsync();
+                .Include(p => p.Likes)
+                .AsQueryable();
 
-          
+            ViewData["CurrentSort"] = sortOrder; 
+
+            switch (sortOrder)
+            {
+                case "following":
+                    if (currentUserId != null)
+                    {
+                        var followingIds = _context.Follows
+                            .Where(f => f.FollowerId == currentUserId && f.IsAccepted)
+                            .Select(f => f.FollowedId);
+
+                        postsQuery = postsQuery.Where(p => followingIds.Contains(p.UserId));
+                    }
+                    else
+                    {
+                        postsQuery = postsQuery.Where(p => false);
+                    }
+                    break;
+
+                case "trending":
+                    postsQuery = postsQuery.OrderByDescending(p => p.Likes.Count);
+                    break;
+
+                case "newest":
+                default:
+                    postsQuery = postsQuery.OrderByDescending(p => p.CreatedAt);
+                    break;
+            }
+
+
+            if (sortOrder == "following")
+            {
+                postsQuery = postsQuery.OrderByDescending(p => p.CreatedAt);
+            }
+
+            var feedPosts = await postsQuery.ToListAsync();
+
             var now = DateTime.Now;
-
             var activeTheme = await _context.CompetitionThemes
                 .Where(t => t.StartDate <= now && t.EndDate >= now && t.Title != "Freestyle Gallery")
                 .OrderByDescending(t => t.EndDate)
                 .FirstOrDefaultAsync();
 
-           
             var viewModel = new HomeViewModel
             {
                 Posts = feedPosts,
