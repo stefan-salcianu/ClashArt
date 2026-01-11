@@ -25,18 +25,7 @@ namespace ClashArt.Controllers
         // GET: Posts/Create
         public IActionResult Create()
         {
-            var activeThemes = _context.CompetitionThemes
-                .Where(t => t.StartDate <= DateTime.Now && t.EndDate >= DateTime.Now)
-                .ToList();
-
-            if (!activeThemes.Any())
-            {
-                var freestyle = _context.CompetitionThemes.FirstOrDefault(t => t.Title.Contains("Freestyle"));
-                if (freestyle != null) activeThemes.Add(freestyle);
-                else return Content("Nu există teme active. Contactează adminul.");
-            }
-
-            ViewData["CompetitionThemeId"] = new SelectList(activeThemes, "Id", "Title");
+            PopulateThemesDropdown();
             return View();
         }
 
@@ -48,69 +37,204 @@ namespace ClashArt.Controllers
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser == null) return RedirectToAction("Login", "Account");
 
-            // 1. Validare Manuală Imagine
             if (imageFile == null || imageFile.Length == 0)
-            {
                 ModelState.AddModelError("ImageUrl", "Trebuie să încarci o imagine principală.");
-            }
 
-            // 2. Eliminăm câmpurile automate din validare
-            // Este CRITIC să facem asta ÎNAINTE de a verifica IsValid
             ModelState.Remove("User");
             ModelState.Remove("UserId");
             ModelState.Remove("Theme");
             ModelState.Remove("ImageUrl");
 
-            // 3. Verificăm validitatea restului (Descriere, ThemeId valid)
             if (ModelState.IsValid)
             {
-                // A. Procesare Imagine
+                // Upload Imagine
                 string uploadsFolder = Path.Combine(_hostEnvironment.WebRootPath, "images", "posts");
                 if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-
                 string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await imageFile.CopyToAsync(fileStream);
-                }
-
+                using (var fileStream = new FileStream(filePath, FileMode.Create)) { await imageFile.CopyToAsync(fileStream); }
                 post.ImageUrl = "/images/posts/" + uniqueFileName;
 
-                // B. Procesare Video (Opțional)
+                // Upload Video
                 if (videoFile != null && videoFile.Length > 0)
                 {
                     string videoFolder = Path.Combine(_hostEnvironment.WebRootPath, "videos", "posts");
                     if (!Directory.Exists(videoFolder)) Directory.CreateDirectory(videoFolder);
-
                     string videoName = Guid.NewGuid().ToString() + Path.GetExtension(videoFile.FileName);
                     string videoPath = Path.Combine(videoFolder, videoName);
-
-                    using (var stream = new FileStream(videoPath, FileMode.Create))
-                    {
-                        await videoFile.CopyToAsync(stream);
-                    }
+                    using (var stream = new FileStream(videoPath, FileMode.Create)) { await videoFile.CopyToAsync(stream); }
                     post.ProofOfWorkVideoUrl = "/videos/posts/" + videoName;
                 }
 
-                // C. Setări Finale și Salvare
                 post.CreatedAt = DateTime.Now;
                 post.UserId = currentUser.Id;
 
                 _context.Add(post);
                 await _context.SaveChangesAsync();
-
                 return RedirectToAction("Profile", "Users", new { id = currentUser.Id });
             }
 
-            // Fallback în caz de eroare (repopulare dropdown)
-            var activeThemes = _context.CompetitionThemes
-                 .Where(t => t.StartDate <= DateTime.Now && t.EndDate >= DateTime.Now)
-                 .ToList();
-            ViewData["CompetitionThemeId"] = new SelectList(activeThemes, "Id", "Title", post.CompetitionThemeId);
-
+            PopulateThemesDropdown(post.CompetitionThemeId);
             return View(post);
+        }
+
+        // GET: Posts/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+            var post = await _context.Posts.FindAsync(id);
+            if (post == null) return NotFound();
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (post.UserId != currentUser.Id && !User.IsInRole("Admin")) return Forbid();
+
+            PopulateThemesDropdown(post.CompetitionThemeId);
+            return View(post);
+        }
+
+        // POST: Posts/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Post post, IFormFile? imageFile, IFormFile? videoFile)
+        {
+            if (id != post.Id) return NotFound();
+
+            var existingPost = await _context.Posts.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+            if (existingPost == null) return NotFound();
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (existingPost.UserId != currentUser.Id && !User.IsInRole("Admin")) return Forbid();
+
+            ModelState.Remove("User");
+            ModelState.Remove("UserId");
+            ModelState.Remove("Theme");
+            ModelState.Remove("ImageUrl");
+            ModelState.Remove("ProofOfWorkVideoUrl");
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // 1. Imagine
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        DeleteFile(existingPost.ImageUrl);
+                        string uploadsFolder = Path.Combine(_hostEnvironment.WebRootPath, "images", "posts");
+                        string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                        using (var fileStream = new FileStream(filePath, FileMode.Create)) { await imageFile.CopyToAsync(fileStream); }
+                        post.ImageUrl = "/images/posts/" + uniqueFileName;
+                    }
+                    else
+                    {
+                        post.ImageUrl = existingPost.ImageUrl;
+                    }
+
+                    // 2. Video
+                    if (videoFile != null && videoFile.Length > 0)
+                    {
+                        DeleteFile(existingPost.ProofOfWorkVideoUrl);
+                        string videoFolder = Path.Combine(_hostEnvironment.WebRootPath, "videos", "posts");
+                        if (!Directory.Exists(videoFolder)) Directory.CreateDirectory(videoFolder);
+                        string videoName = Guid.NewGuid().ToString() + Path.GetExtension(videoFile.FileName);
+                        string videoPath = Path.Combine(videoFolder, videoName);
+                        using (var stream = new FileStream(videoPath, FileMode.Create)) { await videoFile.CopyToAsync(stream); }
+                        post.ProofOfWorkVideoUrl = "/videos/posts/" + videoName;
+                    }
+                    else
+                    {
+                        post.ProofOfWorkVideoUrl = existingPost.ProofOfWorkVideoUrl;
+                    }
+
+                    post.UserId = existingPost.UserId;
+                    post.CreatedAt = existingPost.CreatedAt;
+
+                    _context.Update(post);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Index", "Home");
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Posts.Any(e => e.Id == post.Id)) return NotFound();
+                    else throw;
+                }
+            }
+
+            PopulateThemesDropdown(post.CompetitionThemeId);
+            return View(post);
+        }
+
+        // POST: Posts/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var post = await _context.Posts.FindAsync(id);
+            if (post == null) return NotFound();
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (post.UserId != currentUser.Id && !User.IsInRole("Admin")) return Forbid();
+
+            DeleteFile(post.ImageUrl);
+            DeleteFile(post.ProofOfWorkVideoUrl);
+
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        // ==========================================
+        //  NOU: ȘTERGERE VIDEO SPECIFIC
+        // ==========================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteVideo(int id)
+        {
+            var post = await _context.Posts.FindAsync(id);
+            if (post == null) return NotFound();
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (post.UserId != currentUser.Id && !User.IsInRole("Admin")) return Forbid();
+
+            if (!string.IsNullOrEmpty(post.ProofOfWorkVideoUrl))
+            {
+                DeleteFile(post.ProofOfWorkVideoUrl);
+            }
+
+            post.ProofOfWorkVideoUrl = null;
+
+            // Salvăm doar modificarea asta
+            _context.Entry(post).Property(x => x.ProofOfWorkVideoUrl).IsModified = true;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Edit", new { id = post.Id });
+        }
+
+        // Helpers
+        private void PopulateThemesDropdown(int? selectedThemeId = null)
+        {
+            var activeThemes = _context.CompetitionThemes
+                .Where(t => t.StartDate <= DateTime.Now && t.EndDate >= DateTime.Now)
+                .ToList();
+
+            if (!activeThemes.Any())
+            {
+                var freestyle = _context.CompetitionThemes.FirstOrDefault(t => t.Title.Contains("Freestyle"));
+                if (freestyle != null) activeThemes.Add(freestyle);
+            }
+            ViewData["CompetitionThemeId"] = new SelectList(activeThemes, "Id", "Title", selectedThemeId);
+        }
+
+        private void DeleteFile(string? relativeUrl)
+        {
+            if (string.IsNullOrEmpty(relativeUrl)) return;
+            try
+            {
+                var absolutePath = Path.Combine(_hostEnvironment.WebRootPath, relativeUrl.TrimStart('/'));
+                if (System.IO.File.Exists(absolutePath)) System.IO.File.Delete(absolutePath);
+            }
+            catch { }
         }
     }
 }

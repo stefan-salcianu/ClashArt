@@ -1,11 +1,18 @@
-﻿@model ClashArt.Models.HomeViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@using ClashArt.Models
+
+@model ClashArt.Models.HomeViewModel
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "The Arena";
+    var currentUser = await UserManager.GetUserAsync(User);
+    var currentUserId = currentUser?.Id;
 
-    // Date inițiale calculate pe server
+    // Calculăm datele pentru Progress Bar și Timer doar dacă avem o temă activă
     double progressPercentage = 0;
     long remainingSeconds = 0;
+    TimeSpan remainingTime = TimeSpan.Zero;
 
     if (Model.ActiveTheme != null)
     {
@@ -15,6 +22,7 @@
         if (totalDuration > 0)
         {
             progressPercentage = (elapsed / totalDuration) * 100;
+            // Cap to 100%
             if (progressPercentage > 100) progressPercentage = 100;
         }
 
@@ -22,6 +30,7 @@
         if (timeSpan.TotalSeconds > 0)
         {
             remainingSeconds = (long)timeSpan.TotalSeconds;
+            remainingTime = timeSpan;
         }
     }
 }
@@ -50,11 +59,13 @@
             column-count: 2;
         }
     }
+
     @@media (min-width: 1024px) {
         .masonry-grid {
             column-count: 3;
         }
     }
+
     @@media (min-width: 1280px) {
         .masonry-grid {
             column-count: 4;
@@ -102,20 +113,25 @@
 
                 <div class="flex flex-col items-center gap-4 rounded-xl border border-white/10 bg-black/40 p-6 backdrop-blur-sm">
                     <p class="text-xs font-bold uppercase tracking-widest text-text-subtle">Time Remaining</p>
-
                     <div class="flex gap-4" id="countdown-timer" data-seconds="@remainingSeconds">
                         <div class="flex flex-col items-center gap-1">
-                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="days">00</div>
+                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="days">
+                                @(remainingTime.Days.ToString("00"))
+                            </div>
                             <span class="text-[10px] uppercase text-text-subtle">Days</span>
                         </div>
                         <span class="mt-2 text-2xl font-bold text-primary">:</span>
                         <div class="flex flex-col items-center gap-1">
-                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="hours">00</div>
+                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="hours">
+                                @(remainingTime.Hours.ToString("00"))
+                            </div>
                             <span class="text-[10px] uppercase text-text-subtle">Hours</span>
                         </div>
                         <span class="mt-2 text-2xl font-bold text-primary">:</span>
                         <div class="flex flex-col items-center gap-1">
-                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="minutes">00</div>
+                            <div class="flex size-16 items-center justify-center rounded-lg bg-card-dark text-3xl font-black text-white shadow-inner" id="minutes">
+                                @(remainingTime.Minutes.ToString("00"))
+                            </div>
                             <span class="text-[10px] uppercase text-text-subtle">Mins</span>
                         </div>
                     </div>
@@ -150,7 +166,7 @@
         @foreach (var post in Model.Posts)
         {
             <article class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark shadow-lg transition-transform hover:-translate-y-1">
-                <div class="relative">
+                <div class="relative overflow-hidden">
                     <img src="@post.ImageUrl" alt="Art" class="h-auto w-full object-cover transition duration-500 group-hover:scale-105" />
 
                     @if (post.Theme != null && post.Theme.Title != "Freestyle Gallery")
@@ -164,11 +180,9 @@
                 </div>
 
                 <div class="p-4 pt-2">
-                    <div class="flex items-start justify-between">
-                        <h3 class="line-clamp-2 text-sm font-bold text-white leading-snug">
-                            @post.Description
-                        </h3>
-                    </div>
+                    <h3 class="line-clamp-2 text-sm text-gray-200">
+                        @post.Description
+                    </h3>
 
                     <div class="mt-4 flex items-center justify-between">
                         <div class="flex items-center gap-2">
@@ -180,10 +194,27 @@
                             </span>
                         </div>
 
-                        <button class="flex items-center gap-1.5 rounded-full bg-[#121212] border border-accent-blue/30 px-3 py-1.5 transition hover:bg-accent-blue/10 hover:border-accent-blue group/btn">
-                            <span class="material-symbols-outlined text-[18px] text-accent-blue" style="font-variation-settings: 'FILL' 1;">swords</span>
-                            <span class="text-xs font-bold text-accent-blue">0</span>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            @if (currentUserId != null && post.UserId == currentUserId)
+                            {
+                                <a asp-controller="Posts" asp-action="Edit" asp-route-id="@post.Id"
+                                   class="flex items-center justify-center size-8 rounded-full bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition" title="Edit">
+                                    <span class="material-symbols-outlined text-[16px]">edit</span>
+                                </a>
+
+                                <form asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id" method="post"
+                                      onsubmit="return confirm('Sigur vrei să ștergi această lucrare?');">
+                                    <button type="submit" class="flex items-center justify-center size-8 rounded-full bg-gray-800 text-red-500 hover:bg-red-900/30 transition" title="Delete">
+                                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                                    </button>
+                                </form>
+                            }
+
+                            <button class="flex items-center gap-1.5 rounded-full bg-[#121212] border border-accent-blue/30 px-3 py-1.5 transition hover:bg-accent-blue/10 hover:border-accent-blue">
+                                <span class="material-symbols-outlined text-[18px] text-accent-blue" style="font-variation-settings: 'FILL' 1;">swords</span>
+                                <span class="text-xs font-bold text-accent-blue">0</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </article>
@@ -203,14 +234,10 @@
         const timerElement = document.getElementById("countdown-timer");
         if (!timerElement) return;
 
-        // Luăm timpul total rămas (în secunde) din atributul data-seconds generat de C#
         let totalSeconds = parseInt(timerElement.getAttribute("data-seconds"));
 
         function updateTimer() {
-            if (totalSeconds <= 0) {
-                // Opțional: Reîncarcă pagina când expiră timpul
-                return;
-            }
+            if (totalSeconds <= 0) return;
 
             totalSeconds--;
 
@@ -218,14 +245,15 @@
             const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
             const minutes = Math.floor((totalSeconds % 3600) / 60);
 
-            // Actualizăm textul în elementele HTML
-            document.getElementById("days").innerText = String(days).padStart(2, '0');
-            document.getElementById("hours").innerText = String(hours).padStart(2, '0');
-            document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
+            const elDays = document.getElementById("days");
+            const elHours = document.getElementById("hours");
+            const elMins = document.getElementById("minutes");
+
+            if(elDays) elDays.innerText = String(days).padStart(2, '0');
+            if(elHours) elHours.innerText = String(hours).padStart(2, '0');
+            if(elMins) elMins.innerText = String(minutes).padStart(2, '0');
         }
 
-        // Pornim intervalul să ruleze la fiecare secundă
         setInterval(updateTimer, 1000);
-        updateTimer(); // Rulăm o dată imediat ca să nu așteptăm 1s
     });
 </script>
