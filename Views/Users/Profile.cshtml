@@ -1,8 +1,9 @@
-﻿@model ClashArt.Models.ViewModels.UserProfileViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@model ClashArt.Models.ViewModels.UserProfileViewModel
 
 @{
     ViewData["Title"] = Model.DisplayName;
-    Layout = null;
+    
 }
 
 <!DOCTYPE html>
@@ -60,63 +61,7 @@
 
 <body class="bg-background-light dark:bg-background-dark font-display text-white overflow-x-hidden min-h-screen flex flex-col">
 
-    <header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-white/10 bg-[#121212]/90 backdrop-blur-md px-6 py-4 lg:px-10">
-        <div class="flex items-center gap-8">
-            <a href="/" class="flex items-center gap-3 text-white no-underline">
-                <div class="flex items-center justify-center size-8 rounded bg-primary/20 text-primary">
-                    <span class="material-symbols-outlined text-2xl">brush</span>
-                </div>
-                <h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em]">ClashArt</h2>
-            </a>
-            <nav class="hidden md:flex items-center gap-8">
-                <a class="text-white/80 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Arena</a>
-                <a class="text-white/80 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Leaderboard</a>
-            </nav>
-        </div>
-
-        <div class="flex flex-1 justify-end gap-6">
-            @if (User.Identity.IsAuthenticated)
-            {
-                @using Microsoft.AspNetCore.Identity
-            @using ClashArt.Models
-            @inject UserManager<ApplicationUser> UserManager
-            @inject SignInManager<ApplicationUser> SignInManager
-
-                <div class="flex flex-1 justify-end gap-6">
-                @if (SignInManager.IsSignedIn(User))
-                    {
-                        var currentUser = await UserManager.GetUserAsync(User);
-                        var nameToShow = currentUser?.DisplayName ?? currentUser?.UserName;
-
-                        <div class="flex items-center gap-3">
-                            <span class="text-sm text-gray-400">
-                                Salut, <span class="font-bold text-primary">@nameToShow</span>
-                            </span>
-                            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Landing")">
-                              
-                                <button type="submit" class="text-sm font-bold text-white hover:text-primary transition-colors cursor-pointer">
-                                    Logout
-                                </button>
-                            </form>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="flex gap-3">
-                            <a asp-area="Identity" asp-page="/Account/Login" class="flex items-center justify-center rounded-lg h-10 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-colors">Login</a>
-                            <a asp-area="Identity" asp-page="/Account/Register" class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-neon transition-all">Join Now</a>
-                        </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <div class="flex gap-3">
-                    <a asp-area="Identity" asp-page="/Account/Login" class="flex items-center justify-center rounded-lg h-10 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-colors">Login</a>
-                </div>
-            }
-        </div>
-    </header>
+   
 
     <main class="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
 
@@ -257,44 +202,59 @@
                 </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                        @if (Model.UserPosts.Any())
+                    
+                    @inject UserManager<ApplicationUser> UserManager
+                    @inject SignInManager<ApplicationUser> SignInManager
+                    @if (Model.UserPosts.Any())
+                    {
+                        @foreach (var post in Model.UserPosts)
                         {
-                            @foreach (var post in Model.UserPosts)
-                            {
-                                <div class="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] transition-all duration-300">
+              
+                            var currentUserId = UserManager.GetUserId(User);
+                            bool isLikedByMe = post.Likes != null && post.Likes.Any(l => l.UserId == currentUserId);
+                            int likeCount = post.Likes?.Count ?? 0;
 
-                                    <div class="aspect-[4/3] w-full bg-cover bg-center relative"
-                                         style='background-image: url("@(post.ImageUrl ?? "https://placehold.co/600x400")");'>
+                            <div class="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] transition-all duration-300">
 
-                                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                                            <button class="bg-white text-black px-6 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 text-sm">
-                                                View Details
-                                            </button>
-                                        </div>
+                                <div class="aspect-[4/3] w-full bg-cover bg-center relative"
+                                     style='background-image: url("@(post.ImageUrl ?? "https://placehold.co/600x400")");'>
 
-                                    </div>
-
-                                    <div class="p-4 bg-[#1a1a1a]/80 backdrop-blur-sm">
-                                        <h3 class="text-sm font-bold text-white mb-1 group-hover:text-primary transition-colors truncate">
-                                            @post.Description
-                                        </h3>
-
-                                        <div class="flex justify-between items-center mt-3 border-t border-white/5 pt-3">
-                                            <div class="flex items-center gap-1.5 text-xs text-gray-400">
-                                                <span class="material-symbols-outlined text-sm">calendar_today</span>
-                                                <span>@post.CreatedAt.ToString("dd MMM")</span>
-                                            </div>
-
-                                            <div class="flex items-center gap-1 text-primary text-xs font-bold">
-                                                <span class="material-symbols-outlined text-sm">favorite</span>
-                                                <span>0</span>
-                                            </div>
-                                        </div>
+                                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                                        <button class="bg-white text-black px-6 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 text-sm">
+                                            View Details
+                                        </button>
                                     </div>
                                 </div>
-                            }
+
+                                <div class="p-4 bg-[#1a1a1a]/80 backdrop-blur-sm">
+                                    <h3 class="text-sm font-bold text-white mb-1 group-hover:text-primary transition-colors truncate">
+                                        @post.Description
+                                    </h3>
+
+                                    <div class="flex justify-between items-center mt-3 border-t border-white/5 pt-3">
+                                        <div class="flex items-center gap-1.5 text-xs text-gray-400">
+                                            <span class="material-symbols-outlined text-sm">calendar_today</span>
+                                            <span>@post.CreatedAt.ToString("dd MMM")</span>
+                                        </div>
+
+                                        <form asp-controller="Home" asp-action="ToggleLike" method="post" class="relative z-10">
+                                            <input type="hidden" name="postId" value="@post.Id" />
+
+                                            <button type="submit"
+                                                    class="flex items-center gap-1 text-xs font-bold transition-colors cursor-pointer p-1 rounded
+                                            @(isLikedByMe ? "text-primary" : "text-gray-400 hover:text-white")">
+
+                                                <span class="material-symbols-outlined text-sm transition-transform active:scale-90">
+                                                    @(isLikedByMe ? "favorite" : "favorite_border")
+                                                </span>
+                                                <span>@likeCount</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         }
+                    }
                         else
                         {
                             <div class="col-span-1 sm:col-span-2 lg:col-span-3 flex flex-col items-center justify-center border-2 border-dashed border-gray-800 rounded-2xl bg-black/20 p-12 text-center text-gray-500">

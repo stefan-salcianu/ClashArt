@@ -64,10 +64,10 @@ namespace ClashArt.Controllers
             var followingCount = await _context.Follows.CountAsync(f => f.FollowerId == targetUser.Id && f.IsAccepted);
 
             
-            // Ai acces dacă: Ești TU SAU Profilul e Public SAU Ești deja Follower acceptat
             bool hasAccess = isMe || !targetUser.IsPrivate || isFollowing;
 
             var userPosts = await _context.Posts
+                .Include(p => p.Likes)
                 .Where(p => p.UserId == targetUser.Id)
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();

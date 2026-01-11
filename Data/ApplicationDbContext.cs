@@ -16,6 +16,7 @@ namespace ClashArt.Data
         public DbSet<CompetitionTheme> CompetitionThemes { get; set; }
 
         public DbSet<Follow> Follows { get; set; }
+        public DbSet<PostLike> PostLikes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -44,6 +45,15 @@ namespace ClashArt.Data
             builder.Entity<ApplicationUser>()
            .HasIndex(u => u.DisplayName)
            .IsUnique();
+            builder.Entity<PostLike>()
+            .HasKey(pl => new { pl.PostId, pl.UserId });
+
+            // Relații (Opțional, dar bun pentru claritate)
+            builder.Entity<PostLike>()
+                .HasOne(pl => pl.Post)
+                .WithMany(p => p.Likes) // Va trebui să adăugăm lista asta în Post
+                .HasForeignKey(pl => pl.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

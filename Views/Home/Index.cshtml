@@ -146,49 +146,72 @@
         </div>
     </div>
 
-    <div class="masonry-grid w-full">
-        @foreach (var post in Model.Posts)
-        {
-            <article class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark shadow-lg transition-transform hover:-translate-y-1">
-                <div class="relative">
-                    <img src="@post.ImageUrl" alt="Art" class="h-auto w-full object-cover transition duration-500 group-hover:scale-105" />
+    @using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
 
-                    @if (post.Theme != null && post.Theme.Title != "Freestyle Gallery")
-                    {
-                        <div class="absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-xs font-bold text-primary backdrop-blur-md border border-primary/30">
-                            @post.Theme.Title
-                        </div>
-                    }
+<div class="masonry-grid w-full">
+    @foreach (var post in Model.Posts)
+    {
+        
+            var currentUserId = UserManager.GetUserId(User);
+            bool isLikedByMe = post.Likes != null && post.Likes.Any(l => l.UserId == currentUserId);
+            int likeCount = post.Likes?.Count ?? 0;
+        
 
-                    <div class="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-black/90 to-transparent"></div>
+        <article class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark shadow-lg transition-transform hover:-translate-y-1">
+            <div class="relative">
+                <img src="@post.ImageUrl" alt="Art" class="h-auto w-full object-cover transition duration-500 group-hover:scale-105" />
+
+                @if (post.Theme != null && post.Theme.Title != "Freestyle Gallery")
+                {
+                    <div class="absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-xs font-bold text-primary backdrop-blur-md border border-primary/30">
+                        @post.Theme.Title
+                    </div>
+                }
+
+                <div class="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-black/90 to-transparent"></div>
+            </div>
+
+            <div class="p-4 pt-2">
+                <div class="flex items-start justify-between">
+                    <h3 class="line-clamp-2 text-sm font-bold text-white leading-snug">
+                        @post.Description
+                    </h3>
                 </div>
 
-                <div class="p-4 pt-2">
-                    <div class="flex items-start justify-between">
-                        <h3 class="line-clamp-2 text-sm font-bold text-white leading-snug">
-                            @post.Description
-                        </h3>
-                    </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <a asp-controller="Users" asp-action="Profile" asp-route-id="@post.UserId" class="flex items-center gap-2 no-underline hover:opacity-80 transition-opacity">
+                        <div class="size-8 rounded-full bg-gray-700 bg-cover bg-center ring-2 ring-black"
+                             style="background-image: url('@(string.IsNullOrEmpty(post.User?.AvatarUrl) ? "https://i.pravatar.cc/150" : post.User.AvatarUrl)')">
+                        </div>
+                        <span class="text-sm font-medium text-gray-300">
+                            @(post.User?.DisplayName ?? "Unknown")
+                        </span>
+                    </a>
 
-                    <div class="mt-4 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <div class="size-8 rounded-full bg-gray-700 bg-cover bg-center ring-2 ring-black"
-                                 style="background-image: url('@(string.IsNullOrEmpty(post.User?.AvatarUrl) ? "https://i.pravatar.cc/150" : post.User.AvatarUrl)')">
-                            </div>
-                            <span class="text-sm font-medium text-gray-300">
-                                @(post.User?.DisplayName ?? "Unknown")
+                    <form asp-controller="Home" asp-action="ToggleLike" method="post" class="relative z-10">
+                        <input type="hidden" name="postId" value="@post.Id" />
+                        
+                        <button type="submit" 
+                                class="flex items-center gap-1.5 rounded-full bg-[#121212] border px-3 py-1.5 transition group/btn 
+                                @(isLikedByMe ? "border-primary/50 bg-primary/10" : "border-white/10 hover:bg-white/5 hover:border-primary/30")">
+                            
+                            <span class="material-symbols-outlined text-[18px] transition-colors duration-300 
+                                  @(isLikedByMe ? "text-primary scale-110" : "text-gray-400 group-hover/btn:text-primary")">
+                                @(isLikedByMe ? "favorite" : "favorite_border")
                             </span>
-                        </div>
-
-                        <button class="flex items-center gap-1.5 rounded-full bg-[#121212] border border-accent-blue/30 px-3 py-1.5 transition hover:bg-accent-blue/10 hover:border-accent-blue group/btn">
-                            <span class="material-symbols-outlined text-[18px] text-accent-blue" style="font-variation-settings: 'FILL' 1;">swords</span>
-                            <span class="text-xs font-bold text-accent-blue">0</span>
+                            
+                            <span class="text-xs font-bold transition-colors 
+                                  @(isLikedByMe ? "text-primary" : "text-gray-400 group-hover/btn:text-white")">
+                                @likeCount
+                            </span>
                         </button>
-                    </div>
+                    </form>
                 </div>
-            </article>
-        }
-    </div>
+            </div>
+        </article>
+    }
+</div>
 </div>
 
 <div class="fixed bottom-8 right-8 z-40">
