@@ -3,7 +3,6 @@
 
 @{
     ViewData["Title"] = Model.DisplayName;
-    
 }
 
 <!DOCTYPE html>
@@ -12,29 +11,18 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>@ViewData["Title"] - ClashArt</title>
-
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
     <script>
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
-                    colors: {
-                        "primary": "#e506d6",
-                        "background-light": "#f8f5f8",
-                        "background-dark": "#121212",
-                        "card-dark": "#1e1e1e",
-                        "neon-glow": "#e506d6",
-                    },
-                    fontFamily: {
-                        "display": ["Space Grotesk", "sans-serif"],
-                        "body": ["Noto Sans", "sans-serif"],
-                    },
+                    colors: { "primary": "#e506d6", "background-light": "#f8f5f8", "background-dark": "#121212", "card-dark": "#1e1e1e", "neon-glow": "#e506d6" },
+                    fontFamily: { "display": ["Space Grotesk", "sans-serif"], "body": ["Noto Sans", "sans-serif"] },
                 },
             },
         }
@@ -61,13 +49,11 @@
 
 <body class="bg-background-light dark:bg-background-dark font-display text-white overflow-x-hidden min-h-screen flex flex-col">
 
-   
-
     <main class="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
 
         <div class="w-full rounded-2xl overflow-hidden relative min-h-[300px] md:min-h-[380px] shadow-2xl border border-white/5 group">
             <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                 style='background-image: url("https://images.unsplash.com/photo-1535930749574-1399327ce78f?q=80&w=2536&auto=format&fit=crop");'>
+                 style='background-image: url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop");'>
             </div>
             <div class="absolute inset-0 bg-gradient-to-t from-[#121212] via-[#121212]/40 to-transparent"></div>
             <div class="absolute top-4 right-4 bg-black/60 backdrop-blur-md rounded-full px-4 py-1.5 border border-primary/30 flex items-center gap-2">
@@ -78,12 +64,9 @@
 
         <div class="relative -mt-24 px-4 md:px-8">
             <div class="flex flex-col md:flex-row gap-6 md:items-end">
-
                 <div class="relative group/avatar">
                     <div class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-[#121212] relative z-10 overflow-hidden bg-[#2a2a2a] shadow-[0_0_20px_rgba(229,6,214,0.3)]">
-                        <img src="@(Model.AvatarUrl ?? "https://placehold.co/400")"
-                             class="w-full h-full object-cover"
-                             alt="@Model.DisplayName Avatar" />
+                        <img src="@(Model.AvatarUrl ?? "https://placehold.co/400")" class="w-full h-full object-cover" alt="@Model.DisplayName Avatar" />
                     </div>
                     <div class="absolute -bottom-2 -right-2 md:right-0 z-20 bg-[#121212] rounded-full p-1">
                         <div class="bg-gradient-to-tr from-primary to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20 shadow-lg">
@@ -135,9 +118,6 @@
                                 <span class="relative z-10 tracking-wider">UNFOLLOW</span>
                             </button>
                         </form>
-                        <button class="group relative flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-white/5 border border-white/10 px-6 py-3 text-white font-bold transition-all hover:bg-primary hover:border-primary active:scale-95 w-full md:w-auto">
-                            <span class="material-symbols-outlined relative z-10">swords</span>
-                        </button>
                     }
                     else
                     {
@@ -161,11 +141,8 @@
                         <span class="material-symbols-outlined text-primary/50 group-hover:text-primary group-hover:scale-110 transition-all">trophy</span>
                     </div>
                     <span class="text-3xl font-bold text-white mt-2">@Model.Victories</span>
-                    <span class="text-xs text-green-400 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-xs">trending_up</span> Active Duelist
-                    </span>
+                    <span class="text-xs text-green-400 flex items-center gap-1"><span class="material-symbols-outlined text-xs">trending_up</span> Active Duelist</span>
                 </div>
-
                 <div class="bg-white/5 backdrop-blur-sm border border-white/5 rounded-xl p-6 flex flex-col gap-1 hover:border-primary/30 transition-colors group">
                     <div class="flex justify-between items-start">
                         <span class="text-gray-400 text-sm font-medium uppercase tracking-wider">Followers</span>
@@ -174,7 +151,6 @@
                     <span class="text-3xl font-bold text-white mt-2">@Model.FollowersCount</span>
                     <span class="text-xs text-gray-500">Growing community</span>
                 </div>
-
                 <div class="bg-white/5 backdrop-blur-sm border border-white/5 rounded-xl p-6 flex flex-col gap-1 hover:border-primary/30 transition-colors group">
                     <div class="flex justify-between items-start">
                         <span class="text-gray-400 text-sm font-medium uppercase tracking-wider">Following</span>
@@ -184,10 +160,9 @@
                     <span class="text-xs text-primary">Allies</span>
                 </div>
             </div>
+
             @if (Model.HasAccess)
             {
-                
-
                 <div class="border-b border-white/10 mt-4 mb-6">
                     <div class="flex gap-8">
                         <a class="relative pb-4 px-2 text-white font-bold text-sm tracking-wide cursor-pointer group" href="#">
@@ -197,32 +172,48 @@
                             </div>
                             <div class="absolute bottom-0 left-0 w-full h-0.5 bg-primary shadow-[0_0_10px_#e506d6]"></div>
                         </a>
-                     
                     </div>
                 </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @inject UserManager<ApplicationUser> UserManager
-                    @inject SignInManager<ApplicationUser> SignInManager
                     @if (Model.UserPosts.Any())
                     {
                         @foreach (var post in Model.UserPosts)
                         {
-              
                             var currentUserId = UserManager.GetUserId(User);
                             bool isLikedByMe = post.Likes != null && post.Likes.Any(l => l.UserId == currentUserId);
                             int likeCount = post.Likes?.Count ?? 0;
 
                             <div class="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] transition-all duration-300">
+                                <div class="aspect-[4/3] w-full bg-cover bg-center relative" style='background-image: url("@(post.ImageUrl ?? "https://placehold.co/600x400")");'>
+                                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 backdrop-blur-[2px]">
 
-                                <div class="aspect-[4/3] w-full bg-cover bg-center relative"
-                                     style='background-image: url("@(post.ImageUrl ?? "https://placehold.co/600x400")");'>
+                                        @if (Model.IsCurrentUser)
+                                        {
+                                            <a href="/Posts/Edit/@post.Id?returnUrl=@Context.Request.Path@Context.Request.QueryString"
+                                               class="bg-white/10 border border-white/20 text-white px-6 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 text-sm hover:bg-white hover:text-black flex items-center gap-2">
+                                                <span class="material-symbols-outlined text-sm">edit</span> Edit
+                                            </a>
+                                        }
 
-                                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                                        <button class="bg-white text-black px-6 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 text-sm">
-                                            View Details
-                                        </button>
+                                        @if (Model.IsCurrentUser || User.IsInRole("Admin"))
+                                        {
+                                            <form asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id"
+                                                  asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString"
+                                                  method="post" onsubmit="return confirm('Are you sure you want to delete this artifact?');">
+                                                <button type="submit" class="bg-red-500/10 border border-red-500/50 text-red-500 px-6 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 text-sm hover:bg-red-500 hover:text-white flex items-center gap-2 mt-2">
+                                                    <span class="material-symbols-outlined text-sm">delete</span> Delete
+                                                </button>
+                                            </form>
+                                        }
+
+                                        @if (!Model.IsCurrentUser && !User.IsInRole("Admin"))
+                                        {
+                                            <button class="bg-white text-black px-6 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 text-sm">
+                                                View Details
+                                            </button>
+                                        }
                                     </div>
                                 </div>
 
@@ -230,23 +221,15 @@
                                     <h3 class="text-sm font-bold text-white mb-1 group-hover:text-primary transition-colors truncate">
                                         @post.Description
                                     </h3>
-
                                     <div class="flex justify-between items-center mt-3 border-t border-white/5 pt-3">
                                         <div class="flex items-center gap-1.5 text-xs text-gray-400">
                                             <span class="material-symbols-outlined text-sm">calendar_today</span>
                                             <span>@post.CreatedAt.ToString("dd MMM")</span>
                                         </div>
-
                                         <form asp-controller="Home" asp-action="ToggleLike" method="post" class="relative z-10">
                                             <input type="hidden" name="postId" value="@post.Id" />
-
-                                            <button type="submit"
-                                                    class="flex items-center gap-1 text-xs font-bold transition-colors cursor-pointer p-1 rounded
-                                            @(isLikedByMe ? "text-primary" : "text-gray-400 hover:text-white")">
-
-                                                <span class="material-symbols-outlined text-sm transition-transform active:scale-90">
-                                                    @(isLikedByMe ? "favorite" : "favorite_border")
-                                                </span>
+                                            <button type="submit" class="flex items-center gap-1 text-xs font-bold transition-colors cursor-pointer p-1 rounded @(isLikedByMe ? "text-primary" : "text-gray-400 hover:text-white")">
+                                                <span class="material-symbols-outlined text-sm transition-transform active:scale-90">@(isLikedByMe ? "favorite" : "favorite_border")</span>
                                                 <span>@likeCount</span>
                                             </button>
                                         </form>
@@ -255,46 +238,28 @@
                             </div>
                         }
                     }
-                        else
-                        {
-                            <div class="col-span-1 sm:col-span-2 lg:col-span-3 flex flex-col items-center justify-center border-2 border-dashed border-gray-800 rounded-2xl bg-black/20 p-12 text-center text-gray-500">
-                                <span class="material-symbols-outlined text-4xl mb-2">imagesmode</span>
-                                <p class="text-sm">No artwork shared yet.</p>
-                            </div>
-                        }
-
-                    
-
-                    @* <div class="col-span-1 sm:col-span-2 lg:col-span-2 flex items-center justify-center border-2 border-dashed border-gray-800 rounded-2xl bg-black/20 p-12 text-center text-gray-500">
-                        <div>
+                    else
+                    {
+                        <div class="col-span-1 sm:col-span-2 lg:col-span-3 flex flex-col items-center justify-center border-2 border-dashed border-gray-800 rounded-2xl bg-black/20 p-12 text-center text-gray-500">
                             <span class="material-symbols-outlined text-4xl mb-2">imagesmode</span>
-                            <p class="text-sm">More battle history coming soon from @Model.DisplayName</p>
+                            <p class="text-sm">No artwork shared yet.</p>
                         </div>
-                    </div> *@
+                    }
                 </div>
             }
             else
             {
                 <div class="flex flex-col items-center justify-center py-24 px-4 text-center bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm mt-8 relative overflow-hidden">
-
                     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
-
                     <div class="w-20 h-20 rounded-full bg-[#121212] border border-white/10 flex items-center justify-center mb-6 shadow-2xl relative z-10">
                         <span class="material-symbols-outlined text-4xl text-gray-400">lock</span>
                     </div>
-
                     <h3 class="text-xl font-bold text-white mb-2 relative z-10">This Account is Private</h3>
-                    <p class="text-gray-400 max-w-sm mb-8 relative z-10">
-                        Follow this artist to see their battle history, stats, and gallery.
-                    </p>
-
-                    <div class="text-xs text-primary font-bold uppercase tracking-widest opacity-60 relative z-10">
-                        REQUEST ACCESS ABOVE
-                    </div>
+                    <p class="text-gray-400 max-w-sm mb-8 relative z-10">Follow this artist to see their battle history, stats, and gallery.</p>
+                    <div class="text-xs text-primary font-bold uppercase tracking-widest opacity-60 relative z-10">REQUEST ACCESS ABOVE</div>
                 </div>
             }
         </div>
-
     </main>
 
     <footer class="border-t border-white/10 bg-[#0a0a0a] py-8 mt-auto">
