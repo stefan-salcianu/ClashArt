@@ -26,5 +26,6 @@ namespace ClashArt.Models
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; }
         public virtual ICollection<PostLike> Likes { get; set; } = new List<PostLike>();
+        public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

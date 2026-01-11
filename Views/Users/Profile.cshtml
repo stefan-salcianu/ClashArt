@@ -199,9 +199,26 @@
                             var currentUserId = UserManager.GetUserId(User);
                             bool isLikedByMe = post.Likes != null && post.Likes.Any(l => l.UserId == currentUserId);
                             int likeCount = post.Likes?.Count ?? 0;
+                            // Comentarii count
+                            int commentCount = post.Comments?.Count ?? 0;
 
                             <div class="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] transition-all duration-300">
-                                <div class="aspect-[4/3] w-full bg-cover bg-center relative" style='background-image: url("@(post.ImageUrl ?? "https://placehold.co/600x400")");'>
+
+                                <div class="aspect-[4/3] w-full bg-cover bg-center relative"
+                                     style='background-image: url("@(post.ImageUrl ?? "https://placehold.co/600x400")");'>
+
+                                    <a href="/Posts/Details/@post.Id"
+                                       class="absolute top-3 right-3 z-30 flex items-center justify-center size-9 rounded-full bg-white/90 backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)] text-black transition-transform hover:scale-110 active:scale-95 group/bubble"
+                                       title="View Comments">
+                                        <span class="material-symbols-outlined text-[20px] group-hover/bubble:text-primary transition-colors">chat_bubble</span>
+                                        @if (commentCount > 0)
+                                        {
+                                            <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white shadow-sm">
+                                                @commentCount
+                                            </span>
+                                        }
+                                    </a>
+
                                     <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 backdrop-blur-[2px]">
 
                                         @if (Model.IsCurrentUser)
@@ -236,15 +253,21 @@
                                     <h3 class="text-sm font-bold text-white mb-1 group-hover:text-primary transition-colors truncate">
                                         @post.Description
                                     </h3>
+
                                     <div class="flex justify-between items-center mt-3 border-t border-white/5 pt-3">
                                         <div class="flex items-center gap-1.5 text-xs text-gray-400">
                                             <span class="material-symbols-outlined text-sm">calendar_today</span>
                                             <span>@post.CreatedAt.ToString("dd MMM")</span>
                                         </div>
+
                                         <form asp-controller="Home" asp-action="ToggleLike" method="post" class="relative z-10">
                                             <input type="hidden" name="postId" value="@post.Id" />
-                                            <button type="submit" class="flex items-center gap-1 text-xs font-bold transition-colors cursor-pointer p-1 rounded @(isLikedByMe ? "text-primary" : "text-gray-400 hover:text-white")">
-                                                <span class="material-symbols-outlined text-sm transition-transform active:scale-90">@(isLikedByMe ? "favorite" : "favorite_border")</span>
+                                            <button type="submit"
+                                                    class="flex items-center gap-1 text-xs font-bold transition-colors cursor-pointer p-1 rounded
+                                                                @(isLikedByMe ? "text-primary" : "text-gray-400 hover:text-white")">
+                                                <span class="material-symbols-outlined text-sm transition-transform active:scale-90">
+                                                    @(isLikedByMe ? "favorite" : "favorite_border")
+                                                </span>
                                                 <span>@likeCount</span>
                                             </button>
                                         </form>
@@ -270,8 +293,12 @@
                         <span class="material-symbols-outlined text-4xl text-gray-400">lock</span>
                     </div>
                     <h3 class="text-xl font-bold text-white mb-2 relative z-10">This Account is Private</h3>
-                    <p class="text-gray-400 max-w-sm mb-8 relative z-10">Follow this artist to see their battle history, stats, and gallery.</p>
-                    <div class="text-xs text-primary font-bold uppercase tracking-widest opacity-60 relative z-10">REQUEST ACCESS ABOVE</div>
+                    <p class="text-gray-400 max-w-sm mb-8 relative z-10">
+                        Follow this artist to see their battle history, stats, and gallery.
+                    </p>
+                    <div class="text-xs text-primary font-bold uppercase tracking-widest opacity-60 relative z-10">
+                        REQUEST ACCESS ABOVE
+                    </div>
                 </div>
             }
         </div>

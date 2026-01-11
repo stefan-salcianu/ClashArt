@@ -9,7 +9,7 @@
     var currentUser = await UserManager.GetUserAsync(User);
     var currentUserId = currentUser?.Id;
 
-    // Calculăm datele pentru Progress Bar și Timer doar dacă avem o temă activă
+    // Calculăm datele pentru Progress Bar și Timer
     double progressPercentage = 0;
     long remainingSeconds = 0;
     TimeSpan remainingTime = TimeSpan.Zero;
@@ -49,30 +49,21 @@
     }
 
     @@media (min-width: 640px) {
-        .masonry-grid-sizer, .masonry-item
-
-    {
-        width: 50%; /* Tabletă: 2 coloane */
-    }
-
+        .masonry-grid-sizer, .masonry-item {
+            width: 50%; /* Tabletă: 2 coloane */
+        }
     }
 
     @@media (min-width: 1024px) {
-        .masonry-grid-sizer, .masonry-item
-
-    {
-        width: 33.333%; /* Desktop: 3 coloane */
-    }
-
+        .masonry-grid-sizer, .masonry-item {
+            width: 33.333%; /* Desktop: 3 coloane */
+        }
     }
 
     @@media (min-width: 1280px) {
-        .masonry-grid-sizer, .masonry-item
-
-    {
-        width: 25%; /* Ecran mare: 4 coloane */
-    }
-
+        .masonry-grid-sizer, .masonry-item {
+            width: 25%; /* Ecran mare: 4 coloane */
+        }
     }
 </style>
 
@@ -184,17 +175,16 @@
     </div>
 
     <div id="masonry-container" class="w-full -ml-3">
+
         <div class="masonry-grid-sizer"></div>
 
         @foreach (var post in Model.Posts)
         {
             bool isLikedByMe = post.Likes != null && post.Likes.Any(l => l.UserId == currentUserId);
             int likeCount = post.Likes?.Count ?? 0;
+            int commentCount = post.Comments?.Count ?? 0;
             bool isOwner = currentUserId != null && post.UserId == currentUserId;
 
-            /* MODIFICARE CHEIE AICI:
-            1. .masonry-item este acum un WRAPPER care are "p-3" (padding). Asta creează spațiul.
-            2. <article> este cardul propriu-zis, care are background și border. */
             <div class="masonry-item p-3">
                 <article class="group relative flex flex-col overflow-hidden rounded-2xl bg-[#1e1e1e] border border-white/5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-primary/10">
 
@@ -203,10 +193,22 @@
 
                         @if (post.Theme != null && post.Theme.Title != "Freestyle Gallery")
                         {
-                            <div class="absolute right-3 top-3 rounded-md bg-black/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary backdrop-blur-md border border-primary/30 z-10 shadow-lg">
+                            <div class="absolute left-3 top-3 rounded bg-black/60 px-2 py-1 text-xs font-bold text-primary backdrop-blur-md border border-primary/30 z-10">
                                 @post.Theme.Title
                             </div>
                         }
+
+                        <a href="/Posts/Details/@post.Id"
+                           class="absolute top-3 right-3 z-30 flex items-center justify-center size-9 rounded-full bg-white/90 backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)] text-black transition-transform hover:scale-110 active:scale-95 group/bubble"
+                           title="View Comments">
+                            <span class="material-symbols-outlined text-[20px] group-hover/bubble:text-primary transition-colors">chat_bubble</span>
+                            @if (commentCount > 0)
+                            {
+                                <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white shadow-sm">
+                                    @commentCount
+                                </span>
+                            }
+                        </a>
 
                         <div class="absolute bottom-0 left-0 h-32 w-full bg-gradient-to-t from-[#1e1e1e] via-[#1e1e1e]/80 to-transparent pointer-events-none opacity-90"></div>
                     </div>
@@ -217,6 +219,7 @@
                         </h3>
 
                         <div class="flex items-center justify-between pt-2 border-t border-white/5">
+
                             <a asp-controller="Users" asp-action="Profile" asp-route-id="@post.UserId" class="flex items-center gap-2.5 no-underline group/user">
                                 <div class="size-9 rounded-full bg-gray-700 bg-cover bg-center ring-2 ring-transparent transition-all group-hover/user:ring-primary"
                                      style="background-image: url('@(string.IsNullOrEmpty(post.User?.AvatarUrl) ? "https://i.pravatar.cc/150" : post.User.AvatarUrl)')">
@@ -233,12 +236,17 @@
                                 @if (isOwner)
                                 {
                                     <a asp-controller="Posts" asp-action="Edit" asp-route-id="@post.Id"
+                                       asp-route-returnUrl="/Home/Index"
                                        class="flex items-center justify-center size-8 rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition" title="Edit">
                                         <span class="material-symbols-outlined text-[16px]">edit</span>
                                     </a>
+                                }
 
-                                    <form asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id" method="post"
-                                          onsubmit="return confirm('Sigur vrei să ștergi această lucrare?');">
+                                @if (isOwner || User.IsInRole("Admin"))
+                                {
+                                    <form asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id"
+                                          asp-route-returnUrl="@Context.Request.Path"
+                                          method="post" onsubmit="return confirm('Sigur vrei să ștergi această lucrare?');">
                                         <button type="submit" class="flex items-center justify-center size-8 rounded-full bg-white/5 text-red-400 hover:bg-red-500/20 transition" title="Delete">
                                             <span class="material-symbols-outlined text-[16px]">delete</span>
                                         </button>
@@ -278,7 +286,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // --- TIMER LOGIC ---
         const timerElement = document.getElementById("countdown-timer");
         if (timerElement) {
             let totalSeconds = parseInt(timerElement.getAttribute("data-seconds"));
