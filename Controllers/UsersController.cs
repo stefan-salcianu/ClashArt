@@ -67,6 +67,11 @@ namespace ClashArt.Controllers
             // Ai acces dacă: Ești TU SAU Profilul e Public SAU Ești deja Follower acceptat
             bool hasAccess = isMe || !targetUser.IsPrivate || isFollowing;
 
+            var userPosts = await _context.Posts
+                .Where(p => p.UserId == targetUser.Id)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
+
             var model = new UserProfileViewModel
             {
                 Id = targetUser.Id,
@@ -83,7 +88,8 @@ namespace ClashArt.Controllers
                 IsFollowing = isFollowing,
                 IsPending = isPending,
 
-                HasAccess = hasAccess
+                HasAccess = hasAccess,
+                UserPosts = userPosts
             };
 
             return View(model);
@@ -116,6 +122,7 @@ namespace ClashArt.Controllers
 
             ModelState.Remove("Id");
             ModelState.Remove("ProfileImage");
+            ModelState.Remove("UserPosts");
 
             if (!ModelState.IsValid)
             {

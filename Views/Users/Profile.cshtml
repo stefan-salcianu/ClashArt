@@ -248,7 +248,7 @@
                         <a class="relative pb-4 px-2 text-white font-bold text-sm tracking-wide cursor-pointer group" href="#">
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-outlined text-primary">history_edu</span>
-                                Battle History
+                                Posts
                             </div>
                             <div class="absolute bottom-0 left-0 w-full h-0.5 bg-primary shadow-[0_0_10px_#e506d6]"></div>
                         </a>
@@ -256,37 +256,61 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] transition-all duration-300">
-                        <div class="aspect-[4/3] w-full bg-cover bg-center relative" style='background-image: url("https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=2370&auto=format&fit=crop");'>
-                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                                <button class="bg-white text-black px-6 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 text-sm">View Details</button>
-                            </div>
-                            <div class="absolute top-3 left-3">
-                                <span class="bg-primary/90 text-white text-[10px] font-bold px-2 py-1 rounded border border-white/20 uppercase tracking-wider shadow-lg">Victory</span>
-                            </div>
-                        </div>
-                        <div class="p-4 bg-[#1a1a1a]/80 backdrop-blur-sm">
-                            <h3 class="text-lg font-bold text-white mb-1 group-hover:text-primary transition-colors">Neon Samurai</h3>
-                            <div class="flex justify-between items-center mt-3 border-t border-white/5 pt-3">
-                                <div class="flex items-center gap-1.5 text-xs text-gray-400">
-                                    <span class="material-symbols-outlined text-sm">calendar_today</span>
-                                    <span>2 days ago</span>
-                                </div>
-                                <div class="flex items-center gap-1 text-primary text-xs font-bold">
-                                    <span class="material-symbols-outlined text-sm">favorite</span>
-                                    <span>2.4k</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                    <div class="col-span-1 sm:col-span-2 lg:col-span-2 flex items-center justify-center border-2 border-dashed border-gray-800 rounded-2xl bg-black/20 p-12 text-center text-gray-500">
+                        @if (Model.UserPosts.Any())
+                        {
+                            @foreach (var post in Model.UserPosts)
+                            {
+                                <div class="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] transition-all duration-300">
+
+                                    <div class="aspect-[4/3] w-full bg-cover bg-center relative"
+                                         style='background-image: url("@(post.ImageUrl ?? "https://placehold.co/600x400")");'>
+
+                                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                                            <button class="bg-white text-black px-6 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 text-sm">
+                                                View Details
+                                            </button>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="p-4 bg-[#1a1a1a]/80 backdrop-blur-sm">
+                                        <h3 class="text-sm font-bold text-white mb-1 group-hover:text-primary transition-colors truncate">
+                                            @post.Description
+                                        </h3>
+
+                                        <div class="flex justify-between items-center mt-3 border-t border-white/5 pt-3">
+                                            <div class="flex items-center gap-1.5 text-xs text-gray-400">
+                                                <span class="material-symbols-outlined text-sm">calendar_today</span>
+                                                <span>@post.CreatedAt.ToString("dd MMM")</span>
+                                            </div>
+
+                                            <div class="flex items-center gap-1 text-primary text-xs font-bold">
+                                                <span class="material-symbols-outlined text-sm">favorite</span>
+                                                <span>0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-span-1 sm:col-span-2 lg:col-span-3 flex flex-col items-center justify-center border-2 border-dashed border-gray-800 rounded-2xl bg-black/20 p-12 text-center text-gray-500">
+                                <span class="material-symbols-outlined text-4xl mb-2">imagesmode</span>
+                                <p class="text-sm">No artwork shared yet.</p>
+                            </div>
+                        }
+
+                    
+
+                    @* <div class="col-span-1 sm:col-span-2 lg:col-span-2 flex items-center justify-center border-2 border-dashed border-gray-800 rounded-2xl bg-black/20 p-12 text-center text-gray-500">
                         <div>
                             <span class="material-symbols-outlined text-4xl mb-2">imagesmode</span>
                             <p class="text-sm">More battle history coming soon from @Model.DisplayName</p>
                         </div>
-                    </div>
+                    </div> *@
                 </div>
             }
             else

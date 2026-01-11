@@ -125,8 +125,9 @@ namespace ClashArt.Areas.Identity.Pages.Account
 
                    
                     await _signInManager.SignInAsync(user, isPersistent: false);
+                    await _userManager.AddToRoleAsync(user, "User");
 
-                 
+
                     return RedirectToRoute("default");
 
                 }

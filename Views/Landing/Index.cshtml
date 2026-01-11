@@ -37,10 +37,11 @@
         <div class="flex flex-col sm:flex-row items-center gap-4 mt-4">
             <button class="group relative px-8 py-4 bg-primary rounded-lg text-white font-bold text-lg tracking-wide overflow-hidden shadow-neon transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(229,6,214,0.6)]">
                 <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:animate-[shimmer_1s_infinite]"></div>
-                <span class="relative flex items-center gap-2">
+                <a asp-controller="Arena" asp-action="Index"
+                   class="relative flex items-center gap-2 text-white hover:text-black transition-colors duration-300 cursor-pointer no-underline">
                     JOIN THE ARENA
                     <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                </span>
+                </a>
             </button>
             <button class="px-8 py-4 rounded-lg border border-white/20 hover:border-white/50 bg-white/5 hover:bg-white/10 text-white font-medium transition-all">
                 Watch Trailer

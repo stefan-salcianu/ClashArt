@@ -95,7 +95,10 @@
                 <h2 class="text-white text-xl font-display font-bold leading-tight tracking-[-0.015em]">ClashArt</h2>
             </a>
             <nav class="hidden md:flex items-center gap-8">
-                <a class="text-white/80 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Arena</a>
+                <a asp-controller="Arena" asp-action="Index"
+                   class="text-white/80 hover:text-primary transition-colors text-sm font-medium leading-normal">
+                    Arena
+                </a>
                 <a class="text-white/80 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Leaderboard</a>
                 <a class="text-white/80 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Marketplace</a>
             </nav>

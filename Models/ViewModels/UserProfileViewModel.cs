@@ -32,5 +32,6 @@ namespace ClashArt.Models.ViewModels
         public bool IsFollowing { get; set; }
         public bool IsPending { get; set; }
         public bool HasAccess { get; set; }
-    }
+        public List<Post>? UserPosts { get; set; }
+}
 }
