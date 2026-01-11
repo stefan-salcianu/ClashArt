@@ -1,0 +1,47 @@
+﻿@model string
+@* Modelul este textul care trebuie corectat: "Manifesto" sau "Comment" *@
+
+<div id="toxicModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-xl transition-opacity"></div>
+
+    <div class="relative w-full max-w-md overflow-hidden rounded-2xl border border-red-500/40 bg-[#121212] p-8 shadow-[0_0_50px_rgba(220,38,38,0.5)] text-center animate-bounce-in">
+
+        <div class="absolute -top-24 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-red-600/20 blur-[60px]"></div>
+
+        <div class="relative z-10 flex flex-col items-center">
+            <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-b from-red-500/20 to-transparent border border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.4)] relative">
+                <span class="material-symbols-outlined text-4xl text-red-500">smart_toy</span>
+                <div class="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 border border-black">
+                    <span class="material-symbols-outlined text-xs text-white">priority_high</span>
+                </div>
+            </div>
+
+            <h3 class="mb-2 text-2xl font-black text-white uppercase tracking-wider">
+                System Referee
+            </h3>
+
+            <div class="mb-6 inline-flex items-center gap-2 rounded-full bg-red-500/10 px-4 py-1.5 border border-red-500/20">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+                <span class="text-xs font-bold text-red-400 uppercase tracking-wide">Toxic language detected</span>
+            </div>
+
+            <p class="mb-8 text-gray-300 leading-relaxed">
+                Our AI has flagged content that violates our community standards. Please revise your <span class="text-white font-bold border-b border-red-500/50">@Model</span> to proceed.
+            </p>
+
+            <button onclick="document.getElementById('toxicModal').remove()"
+                    class="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-red-600 px-6 py-4 text-sm font-bold text-white transition-all hover:bg-red-500 hover:shadow-neon-red cursor-pointer">
+                <span class="material-symbols-outlined relative z-10 text-xl group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                <span class="relative z-10 uppercase tracking-wide">Back to Edit</span>
+                <div class="absolute inset-0 -z-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:animate-shine"></div>
+            </button>
+
+            <div class="mt-4 text-xs font-medium text-gray-600">
+                Error Code: AI_MOD_VIOLATION_0X99
+            </div>
+        </div>
+    </div>
+</div>
