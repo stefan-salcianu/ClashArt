@@ -9,7 +9,6 @@
     var currentUser = await UserManager.GetUserAsync(User);
     var currentUserId = currentUser?.Id;
 
-    // Calculăm datele pentru Progress Bar și Timer doar dacă avem o temă activă
     double progressPercentage = 0;
     long remainingSeconds = 0;
     TimeSpan remainingTime = TimeSpan.Zero;
@@ -22,7 +21,6 @@
         if (totalDuration > 0)
         {
             progressPercentage = (elapsed / totalDuration) * 100;
-            // Cap to 100%
             if (progressPercentage > 100) progressPercentage = 100;
         }
 
@@ -43,9 +41,13 @@
         border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
+
     /* --- MASONRY SETUP PENTRU JS --- */
     /* Nu folosim grid sau columns aici, lăsăm JS-ul să calculeze pozițiile absolute */
     .masonry-grid-sizer,
+
+
+
     .masonry-item {
         width: 100%; /* Mobile: 1 coloană */
     }
@@ -200,61 +202,65 @@
 
         @foreach (var post in Model.Posts)
         {
-            // LOGICA C# pentru Fiecare Postare
             bool isLikedByMe = post.Likes != null && post.Likes.Any(l => l.UserId == currentUserId);
             int likeCount = post.Likes?.Count ?? 0;
             bool isOwner = currentUserId != null && post.UserId == currentUserId;
 
-            <div class="masonry-item p-3">
-                <article class="group relative overflow-hidden rounded-xl bg-card-dark shadow-lg transition-transform hover:-translate-y-1">
 
-                    <div class="relative overflow-hidden">
-                        <img src="@post.ImageUrl" alt="Art" class="h-auto w-full object-cover transition duration-500 group-hover:scale-105" />
+            <article class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark shadow-lg transition-transform hover:-translate-y-1">
+                <div class="relative overflow-hidden">
+                    <img src="@post.ImageUrl" alt="Art" class="h-auto w-full object-cover transition duration-500 group-hover:scale-105" />
 
-                        @if (post.Theme != null && post.Theme.Title != "Freestyle Gallery")
-                        {
-                            <div class="absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-xs font-bold text-primary backdrop-blur-md border border-primary/30 z-10">
-                                @post.Theme.Title
-                            </div>
-                        }
-
-                        <div class="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
-                    </div>
-
-                    <div class="p-4 pt-2">
-                        <div class="flex items-start justify-between">
-                            <h3 class="line-clamp-2 text-sm font-bold text-white leading-snug">
-                                @post.Description
-                            </h3>
+                    @if (post.Theme != null && post.Theme.Title != "Freestyle Gallery")
+                    {
+                        <div class="absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-xs font-bold text-primary backdrop-blur-md border border-primary/30 z-10">
+                            @post.Theme.Title
                         </div>
+                    }
+                    <div class="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
+                </div>
 
-                        <div class="mt-4 flex items-center justify-between">
+                <div class="p-4 pt-2">
+                    <h3 class="line-clamp-2 text-sm font-bold text-white leading-snug">
+                        @post.Description
+                    </h3>
 
-                            <a asp-controller="Users" asp-action="Profile" asp-route-id="@post.UserId" class="flex items-center gap-2 no-underline hover:opacity-80 transition-opacity">
-                                <div class="size-8 rounded-full bg-gray-700 bg-cover bg-center ring-2 ring-black"
-                                     style="background-image: url('@(string.IsNullOrEmpty(post.User?.AvatarUrl) ? "https://i.pravatar.cc/150" : post.User.AvatarUrl)')">
-                                </div>
-                                <span class="text-sm font-medium text-gray-300">
-                                    @(post.User?.DisplayName ?? "Unknown")
-                                </span>
-                            </a>
+                    <div class="mt-4 flex items-center justify-between">
+                        <a asp-controller="Users" asp-action="Profile" asp-route-id="@post.UserId" class="flex items-center gap-2 no-underline hover:opacity-80 transition-opacity">
+                            <div class="size-8 rounded-full bg-gray-700 bg-cover bg-center ring-2 ring-black"
+                                 style="background-image: url('@(string.IsNullOrEmpty(post.User?.AvatarUrl) ? "https://i.pravatar.cc/150" : post.User.AvatarUrl)')">
+                            </div>
+                            <span class="text-sm font-medium text-gray-300">
+                                @(post.User?.DisplayName ?? "Unknown")
+                            </span>
+                        </a>
 
-                            <div class="flex items-center gap-2">
-
+                        <div class="flex items-center gap-2">
+                            @if (currentUserId != null)
+                            {
+                                // EDIT: Doar Owner
                                 @if (isOwner)
                                 {
                                     <a asp-controller="Posts" asp-action="Edit" asp-route-id="@post.Id"
+                                       asp-route-returnUrl="/Home/Index"
                                        class="flex items-center justify-center size-8 rounded-full bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition" title="Edit">
                                         <span class="material-symbols-outlined text-[16px]">edit</span>
                                     </a>
+                                }
 
-                                    <form asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id" method="post"
+                                // DELETE: Admin SAU Owner
+                                @if (isOwner || User.IsInRole("Admin"))
+                                {
+                                    <form asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id"
+                                          asp-route-returnUrl="/Home/Index"
+                                          method="post"
                                           onsubmit="return confirm('Sigur vrei să ștergi această lucrare?');">
                                         <button type="submit" class="flex items-center justify-center size-8 rounded-full bg-gray-800 text-red-500 hover:bg-red-900/30 transition" title="Delete">
                                             <span class="material-symbols-outlined text-[16px]">delete</span>
                                         </button>
                                     </form>
                                 }
+
 
                                 <form asp-controller="Home" asp-action="ToggleLike" method="post">
                                     <input type="hidden" name="postId" value="@post.Id" />
@@ -274,11 +280,13 @@
                                         </span>
                                     </button>
                                 </form>
-                            </div>
+
+                            }
+
+                            
                         </div>
                     </div>
                 </article>
-            </div>
         }
     </div>
 </div>

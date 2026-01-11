@@ -22,14 +22,15 @@ namespace ClashArt.Controllers
             _userManager = userManager;
         }
 
-        // GET: Posts/Create
+        // ==========================================
+        // CREATE
+        // ==========================================
         public IActionResult Create()
         {
             PopulateThemesDropdown();
             return View();
         }
 
-        // POST: Posts/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Post post, IFormFile imageFile, IFormFile? videoFile)
@@ -71,31 +72,38 @@ namespace ClashArt.Controllers
 
                 _context.Add(post);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Profile", "Users", new { id = currentUser.Id });
+
+                // Redirect către Arena (Home/Index)
+                return RedirectToAction("Index", "Home");
             }
 
             PopulateThemesDropdown(post.CompetitionThemeId);
             return View(post);
         }
 
-        // GET: Posts/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // ==========================================
+        // EDIT
+        // ==========================================
+        public async Task<IActionResult> Edit(int? id, string? returnUrl)
         {
             if (id == null) return NotFound();
             var post = await _context.Posts.FindAsync(id);
             if (post == null) return NotFound();
 
             var currentUser = await _userManager.GetUserAsync(User);
-            if (post.UserId != currentUser.Id && !User.IsInRole("Admin")) return Forbid();
+            if (post.UserId != currentUser.Id) return Forbid();
 
             PopulateThemesDropdown(post.CompetitionThemeId);
+
+            // Păstrăm URL-ul de unde a venit userul
+            ViewData["ReturnUrl"] = returnUrl;
+
             return View(post);
         }
 
-        // POST: Posts/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Post post, IFormFile? imageFile, IFormFile? videoFile)
+        public async Task<IActionResult> Edit(int id, Post post, IFormFile? imageFile, IFormFile? videoFile, string? returnUrl)
         {
             if (id != post.Id) return NotFound();
 
@@ -103,7 +111,7 @@ namespace ClashArt.Controllers
             if (existingPost == null) return NotFound();
 
             var currentUser = await _userManager.GetUserAsync(User);
-            if (existingPost.UserId != currentUser.Id && !User.IsInRole("Admin")) return Forbid();
+            if (existingPost.UserId != currentUser.Id) return Forbid();
 
             ModelState.Remove("User");
             ModelState.Remove("UserId");
@@ -151,6 +159,9 @@ namespace ClashArt.Controllers
 
                     _context.Update(post);
                     await _context.SaveChangesAsync();
+
+                    // Redirect Inteligent
+                    if (!string.IsNullOrEmpty(returnUrl)) return LocalRedirect(returnUrl);
                     return RedirectToAction("Index", "Home");
                 }
                 catch (DbUpdateConcurrencyException)
@@ -161,18 +172,22 @@ namespace ClashArt.Controllers
             }
 
             PopulateThemesDropdown(post.CompetitionThemeId);
+            ViewData["ReturnUrl"] = returnUrl;
             return View(post);
         }
 
-        // POST: Posts/Delete/5
+        // ==========================================
+        // DELETE
+        // ==========================================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, string? returnUrl)
         {
             var post = await _context.Posts.FindAsync(id);
             if (post == null) return NotFound();
 
             var currentUser = await _userManager.GetUserAsync(User);
+            // Adminul sau Ownerul
             if (post.UserId != currentUser.Id && !User.IsInRole("Admin")) return Forbid();
 
             DeleteFile(post.ImageUrl);
@@ -181,21 +196,23 @@ namespace ClashArt.Controllers
             _context.Posts.Remove(post);
             await _context.SaveChangesAsync();
 
+            // Redirect Inteligent
+            if (!string.IsNullOrEmpty(returnUrl)) return LocalRedirect(returnUrl);
             return RedirectToAction("Index", "Home");
         }
 
         // ==========================================
-        //  NOU: ȘTERGERE VIDEO SPECIFIC
+        // DELETE VIDEO
         // ==========================================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteVideo(int id)
+        public async Task<IActionResult> DeleteVideo(int id, string? returnUrl)
         {
             var post = await _context.Posts.FindAsync(id);
             if (post == null) return NotFound();
 
             var currentUser = await _userManager.GetUserAsync(User);
-            if (post.UserId != currentUser.Id && !User.IsInRole("Admin")) return Forbid();
+            if (post.UserId != currentUser.Id) return Forbid();
 
             if (!string.IsNullOrEmpty(post.ProofOfWorkVideoUrl))
             {
@@ -203,12 +220,11 @@ namespace ClashArt.Controllers
             }
 
             post.ProofOfWorkVideoUrl = null;
-
-            // Salvăm doar modificarea asta
             _context.Entry(post).Property(x => x.ProofOfWorkVideoUrl).IsModified = true;
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Edit", new { id = post.Id });
+            // Ne întoarcem la Edit, păstrând returnUrl-ul original
+            return RedirectToAction("Edit", new { id = post.Id, returnUrl = returnUrl });
         }
 
         // Helpers
