@@ -260,7 +260,6 @@ namespace ClashArt.Controllers
 
             return Json(users);
         }
-        // --- ZONA DE FOLLOW REQUESTS ---
 
         [HttpGet]
         [Authorize]
@@ -316,6 +315,30 @@ namespace ClashArt.Controllers
             }
 
             return RedirectToAction("Requests");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFollowersList(string userId)
+        {
+            var followers = await _context.Follows
+                .Include(f => f.Follower)
+                .Where(f => f.FollowedId == userId && f.IsAccepted) 
+                .Select(f => f.Follower)
+                .ToListAsync();
+
+            return PartialView("_UserListModal", followers);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFollowingList(string userId)
+        {
+            var following = await _context.Follows
+                .Include(f => f.Followed)
+                .Where(f => f.FollowerId == userId && f.IsAccepted)
+                .Select(f => f.Followed)
+                .ToListAsync();
+
+            return PartialView("_UserListModal", following);
         }
     }
 }

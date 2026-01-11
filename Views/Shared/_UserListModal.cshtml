@@ -1,0 +1,37 @@
+﻿@model IEnumerable<ClashArt.Models.ApplicationUser>
+
+@if (!Model.Any())
+{
+    <div class="flex flex-col items-center justify-center py-8 text-gray-500">
+        <span class="material-symbols-outlined text-4xl mb-2 opacity-50">group_off</span>
+        <p class="text-sm">Nimeni aici... încă.</p>
+    </div>
+}
+else
+{
+    <div class="flex flex-col gap-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+        @foreach (var user in Model)
+        {
+            <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 hover:bg-white/10 transition-all group">
+
+                <a asp-controller="Users" asp-action="Profile" asp-route-id="@user.Id" class="flex items-center gap-3 no-underline">
+                    <div class="size-10 rounded-full bg-gray-700 bg-cover bg-center ring-2 ring-transparent group-hover:ring-primary transition-all"
+                         style="background-image: url('@(string.IsNullOrEmpty(user.AvatarUrl) ? "https://i.pravatar.cc/150" : user.AvatarUrl)')">
+                    </div>
+
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold text-white group-hover:text-primary transition-colors">
+                            @(user.DisplayName ?? "Unknown Warrior")
+                        </span>
+                        <span class="text-[10px] text-gray-400">@@@user.UserName</span>
+                    </div>
+                </a>
+
+                <a asp-controller="Users" asp-action="Profile" asp-route-id="@user.Id"
+                   class="size-8 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-primary hover:shadow-[0_0_10px_#e506d6] transition-all">
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+            </div>
+        }
+    </div>
+}
