@@ -252,5 +252,26 @@ namespace ClashArt.Controllers
             }
             catch { }
         }
+
+        [HttpGet]
+        [AllowAnonymous] // Permitem și vizitatorilor să vadă, dar nu să comenteze
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var post = await _context.Posts
+                .Include(p => p.User) // Autorul postării
+                .Include(p => p.Theme) // Tema
+                .Include(p => p.Likes) // Like-uri
+                .Include(p => p.Comments).ThenInclude(c => c.User) // Comentariile + Autorii lor
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (post == null) return NotFound();
+
+            // Ordonăm comentariile descrescător (cele mai noi sus)
+            post.Comments = post.Comments.OrderByDescending(c => c.CreatedAt).ToList();
+
+            return View(post);
+        }
     }
 }
