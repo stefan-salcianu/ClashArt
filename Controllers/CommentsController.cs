@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
+using ClashArt.Services.Gemini;
 
 namespace ClashArt.Controllers
 {
@@ -12,11 +14,13 @@ namespace ClashArt.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ContentModerator _moderator; 
 
-        public CommentsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public CommentsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ContentModerator moderator)
         {
             _context = context;
             _userManager = userManager;
+            _moderator = moderator;
         }
 
         [HttpPost]
@@ -28,8 +32,18 @@ namespace ClashArt.Controllers
                 return RedirectToAction("Details", "Posts", new { id = postId });
             }
 
-            var currentUser = await _userManager.GetUserAsync(User);
+            bool isSafe = await _moderator.IsTextSafe(content);
+            if (!isSafe)
+            {
+               
+                TempData["ErrorMessage"] = "Comment blocked by AI filter (Inappropriate or toxic language).";
 
+                // Ne întoarcem la postare fără să salvăm nimic
+                return RedirectToAction("Details", "Posts", new { id = postId });
+            }
+
+            var currentUser = await _userManager.GetUserAsync(User);
+    
             var comment = new Comment
             {
                 PostId = postId,

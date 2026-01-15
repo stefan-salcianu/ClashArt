@@ -75,6 +75,17 @@
 
                 <div class="border-t border-white/5 my-2"></div>
 
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="animate-pulse rounded-lg bg-red-500/10 border border-red-500/30 p-3 flex items-start gap-2 text-red-400 mb-4">
+                        <span class="material-symbols-outlined text-[20px] shrink-0">gpp_bad</span>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide">System Alert</p>
+                            <p class="text-sm">@TempData["ErrorMessage"]</p>
+                        </div>
+                    </div>
+                }
+
                 @if (Model.Comments.Any())
                 {
                     @foreach (var comment in Model.Comments)
@@ -119,7 +130,8 @@
                     <div class="flex gap-4">
                         <form asp-controller="Home" asp-action="ToggleLike" method="post">
                             <input type="hidden" name="postId" value="@Model.Id" />
-                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" /> <button type="submit" class="hover:opacity-70 transition">
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                            <button type="submit" class="hover:opacity-70 transition">
                                 <span class="material-symbols-outlined text-2xl @(isLikedByMe ? "text-primary fill-current" : "text-white")"
                                       style="@(isLikedByMe ? "font-variation-settings: 'FILL' 1" : "")">
                                     favorite
